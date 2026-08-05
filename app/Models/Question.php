@@ -15,6 +15,14 @@ use App\Models\QuestionVote;
 
 class Question extends Model
 {
+    protected $fillable = [
+        'user_id',
+        'title',
+        'description',
+        'views',
+        'is_solved',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
