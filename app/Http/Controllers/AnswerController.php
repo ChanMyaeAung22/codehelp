@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Question;
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 
 class AnswerController extends Controller
 {
-    public function store(Request $request, Question $question): RedirectResponse
+    public function store(Request $request, Question $question)
     {
         $validated = $request->validate([
             'content' => ['required', 'string', 'min:5'],
