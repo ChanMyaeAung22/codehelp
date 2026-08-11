@@ -16,17 +16,17 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('user_id')
-                    ->constrained()
-                    ->onDelete('cascade');
+                ->constrained()
+                ->onDelete('cascade');
 
-            $table->morphs('commentable'); //Instead of having both question_id and answer_id -> 
-                                           // creates two columns automatically:commentable_idcommentable_type
+            $table->morphs('commentable'); // Instead of having both question_id and answer_id ->
+            // creates two columns automatically:commentable_idcommentable_type
 
             $table->text('content');
 
             $table->timestamps();
 
-});
+        });
     }
 
     /**

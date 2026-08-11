@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\QuestionController;
+use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
 
@@ -23,6 +24,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/questions/{question}', [QuestionController::class, 'show'])
         ->name('questions.show');
 
+    Route::post('/questions/{question}/answers', [AnswerController::class, 'store'])
+        ->middleware('auth')
+        ->name('answers.store');
 });
 
 require __DIR__.'/settings.php';

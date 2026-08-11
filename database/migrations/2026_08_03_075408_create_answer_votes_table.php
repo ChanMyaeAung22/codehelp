@@ -16,20 +16,20 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('answer_id')
-                    ->constrained()
-                    ->onDelete('cascade');
+                ->constrained()
+                ->onDelete('cascade');
 
             $table->foreignId('user_id')
-                    ->constrained()
-                    ->onDelete('cascade');
-                
+                ->constrained()
+                ->onDelete('cascade');
+
             $table->tinyInteger('vote_type');
 
             $table->timestamps();
 
             $table->unique(['answer_id', 'user_id']);
 
-});
+        });
     }
 
     /**

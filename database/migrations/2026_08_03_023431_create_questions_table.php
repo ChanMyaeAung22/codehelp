@@ -14,15 +14,15 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); //who ask the question
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // who ask the question
 
-            $table->string('title'); //question title
+            $table->string('title'); // question title
 
-            $table->text('description'); //full question details
+            $table->text('description'); // full question details
 
-            $table->integer('views')->default(0); //number of views
+            $table->integer('views')->default(0); // number of views
 
-            $table->boolean('is_solved')->default(false); //whether an answer has been accepted
+            $table->boolean('is_solved')->default(false); // whether an answer has been accepted
 
             $table->timestamps();
         });

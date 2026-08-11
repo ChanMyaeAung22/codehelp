@@ -15,17 +15,17 @@ return new class extends Migration
 
             $table->id();
 
-            $table->foreignId('question_id') //which question this answer belongs to
-                    ->constrained()
-                    ->onDelete('cascade');
+            $table->foreignId('question_id') // which question this answer belongs to
+                ->constrained()
+                ->onDelete('cascade');
 
-            $table->foreignId('user_id') //who wrote the answer
-                    ->constrained()
-                    ->onDelete('cascade');
+            $table->foreignId('user_id') // who wrote the answer
+                ->constrained()
+                ->onDelete('cascade');
 
-            $table->text('content'); //the answer itselft
+            $table->text('content'); // the answer itselft
 
-            $table->boolean('is_accepted')->default(false); //Whether the question owner accepted this answer
+            $table->boolean('is_accepted')->default(false); // Whether the question owner accepted this answer
 
             $table->timestamps();
 

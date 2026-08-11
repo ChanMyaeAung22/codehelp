@@ -12,18 +12,12 @@ function submit() {
 </script>
 
 <template>
-    <div class="max-w-4xl mx-auto py-10">
-
-        <h1 class="text-3xl font-bold mb-8">
-            Ask a Question
-        </h1>
+    <div class="mx-auto max-w-4xl py-10">
+        <h1 class="mb-8 text-3xl font-bold">Ask a Question</h1>
 
         <form @submit.prevent="submit" class="space-y-6">
-
             <div>
-                <label class="block mb-2 font-medium">
-                    Title
-                </label>
+                <label class="mb-2 block font-medium"> Title </label>
 
                 <input
                     v-model="form.title"
@@ -33,9 +27,7 @@ function submit() {
             </div>
 
             <div>
-                <label class="block mb-2 font-medium">
-                    Description
-                </label>
+                <label class="mb-2 block font-medium"> Description </label>
 
                 <textarea
                     v-model="form.description"
@@ -46,20 +38,11 @@ function submit() {
 
             <button
                 type="submit"
-                class="bg-blue-600 text-white px-6 py-3 rounded-lg
-                       hover:bg-blue-700
-                        hover:shadow-xl
-                        hover:scale-105
-                        active:scale-95
-                        transition-all
-                        duration-300
-                        cursor-pointer"
+                class="cursor-pointer rounded-lg bg-blue-600 px-6 py-3 text-white transition-all duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-xl active:scale-95"
                 :disabled="form.processing"
             >
-                {{ form.processing ? 'Posting...' : 'Post Question' }} 
+                {{ form.processing ? 'Posting...' : 'Post Question' }}
             </button>
-
         </form>
-
     </div>
 </template>

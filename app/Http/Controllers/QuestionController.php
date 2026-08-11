@@ -5,15 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Http\RedirectResponse;
+use Inertia\Response;
 
 class QuestionController extends Controller
 {
-    public function create()
+    public function create(): Response
     {
         return Inertia::render('questions/Create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -21,35 +23,35 @@ class QuestionController extends Controller
         ]);
 
         Question::create([
-        'user_id' => auth()->id(),
-        'title' => $validated['title'],
-        'description' => $validated['description'],
-        'views' => 0,
-        'is_solved' => false,
+            'user_id' => auth()->id(),
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'views' => 0,
+            'is_solved' => false,
         ]);
 
         return redirect()
-        ->route('dashboard')
-        ->with('success', 'Question posted successfully!');
+            ->route('dashboard')
+            ->with('success', 'Question posted successfully!');
     }
 
-    public function index()
-    {   
+    public function index(): Response
+    {
         $questions = Question::with([
             'user',
             'answers',
             'tags',
             'votes',
         ])
-        ->latest()
-        ->get();
+            ->latest()
+            ->get();
 
         return Inertia::render('questions/Index', [
-        'questions' => $questions,
+            'questions' => $questions,
         ]);
     }
 
-    public function show(Question $question)
+    public function show(Question $question): Response
     {
         $question->load([
             'user',
@@ -63,5 +65,4 @@ class QuestionController extends Controller
             'question' => $question,
         ]);
     }
-
 }

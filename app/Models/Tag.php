@@ -17,6 +17,6 @@ class Tag extends Model
      */
     public function questions(): BelongsToMany
     {
-        return $this->belongsToMany(Question::class); //A tag can belong to many questions.
+        return $this->belongsToMany(Question::class); // A tag can belong to many questions.
     }
 }

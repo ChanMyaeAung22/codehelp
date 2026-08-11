@@ -27,28 +27,20 @@ defineProps<{
 </script>
 
 <template>
-    <div class="max-w-4xl mx-auto py-10">
-
+    <div class="mx-auto max-w-4xl py-10">
         <!-- Header -->
-        <div class="flex items-center justify-between mb-10">
+        <div class="mb-10 flex items-center justify-between">
             <div>
-                <h1 class="text-4xl font-bold">
-                    All Questions
-                </h1>
+                <h1 class="text-4xl font-bold">All Questions</h1>
 
-                <p class="text-gray-500 mt-2">
+                <p class="mt-2 text-gray-500">
                     Browse programming questions from the community.
                 </p>
             </div>
 
             <Link
                 href="/questions/create"
-                class="bg-blue-600 text-white px-6 py-3 rounded-xl
-                       hover:bg-blue-700
-                       hover:shadow-lg
-                       hover:scale-105
-                       active:scale-95
-                       transition-all duration-300"
+                class="rounded-xl bg-blue-600 px-6 py-3 text-white transition-all duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg active:scale-95"
             >
                 Ask Question
             </Link>
@@ -58,39 +50,30 @@ defineProps<{
         <div
             v-for="question in questions"
             :key="question.id"
-            class="bg-white rounded-2xl shadow-md hover:shadow-xl
-                   transition-all duration-300
-                   p-8 mb-6 border border-gray-100"
+            class="mb-6 rounded-2xl border border-gray-100 bg-white p-8 shadow-md transition-all duration-300 hover:shadow-xl"
         >
             <!-- Title -->
             <Link
                 :href="`/questions/${question.id}`"
-                class="text-2xl font-bold text-gray-800
-                       hover:text-blue-600
-                       transition-colors
-                       cursor-pointer"
+                class="cursor-pointer text-2xl font-bold text-gray-800 transition-colors hover:text-blue-600"
             >
                 {{ question.title }}
-        </Link>
+            </Link>
 
             <!-- Description -->
-            <p class="mt-4 text-gray-600 leading-7">
+            <p class="mt-4 leading-7 text-gray-600">
                 {{ question.description }}
             </p>
 
             <!-- Stats -->
-            <div class="flex gap-6 mt-6 text-sm text-gray-500">
-                <span>
-                    💬 {{ question.answers.length }} Answers
-                </span>
+            <div class="mt-6 flex gap-6 text-sm text-gray-500">
+                <span> 💬 {{ question.answers.length }} Answers </span>
 
-                <span>
-                    👍 {{ question.votes.length }} Votes
-                </span>
+                <span> 👍 {{ question.votes.length }} Votes </span>
             </div>
 
             <!-- Footer -->
-            <div class="flex justify-between items-center mt-6">
+            <div class="mt-6 flex items-center justify-between">
                 <div class="text-sm text-gray-500">
                     👤 {{ question.user.name }}
                 </div>
@@ -100,6 +83,5 @@ defineProps<{
                 </div>
             </div>
         </div>
-
     </div>
 </template>

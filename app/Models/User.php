@@ -7,18 +7,13 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
-use App\Models\Question;
-use App\Models\Answer;
-use App\Models\Comment;
-use App\Models\QuestionVote;
-use App\Models\AnswerVote;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -56,7 +51,7 @@ class User extends Authenticatable implements PasskeyUser
 
     public function questions(): HasMany
     {
-        return $this->hasMany(Question::class); //One user can ask many questions
+        return $this->hasMany(Question::class); // One user can ask many questions
     }
 
     public function answers(): HasMany
@@ -69,7 +64,7 @@ class User extends Authenticatable implements PasskeyUser
         return $this->hasMany(Comment::class);
     }
 
-   public function questionVotes(): HasMany
+    public function questionVotes(): HasMany
     {
         return $this->hasMany(QuestionVote::class);
     }

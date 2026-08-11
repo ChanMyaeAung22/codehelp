@@ -17,11 +17,11 @@ return new class extends Migration
 
             $table->string('name')->unique();
 
-            $table->string('slug')->unique(); //use instead of slug, the URL-friendly version of a name
+            $table->string('slug')->unique(); // use instead of slug, the URL-friendly version of a name
 
             $table->timestamps();
 
-});
+        });
     }
 
     /**

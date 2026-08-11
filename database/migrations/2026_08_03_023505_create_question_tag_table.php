@@ -14,16 +14,16 @@ return new class extends Migration
         Schema::create('question_tag', function (Blueprint $table) {
 
             $table->foreignId('question_id')
-                    ->constrained()
-                    ->onDelete('cascade');
+                ->constrained()
+                ->onDelete('cascade');
 
             $table->foreignId('tag_id')
-                    ->constrained()
-                    ->onDelete('cascade');
+                ->constrained()
+                ->onDelete('cascade');
 
             $table->primary(['question_id', 'tag_id']);
 
-});
+        });
     }
 
     /**
