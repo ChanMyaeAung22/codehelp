@@ -1,9 +1,29 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 
-defineProps({
-    questions: Array,
-});
+interface Question {
+    id: number;
+    title: string;
+    description: string;
+    created_at: string;
+
+    user: {
+        id: number;
+        name: string;
+    };
+
+    answers: Array<{
+        id: number;
+    }>;
+
+    votes: Array<{
+        id: number;
+    }>;
+}
+
+defineProps<{
+    questions: Question[];
+}>();
 </script>
 
 <template>

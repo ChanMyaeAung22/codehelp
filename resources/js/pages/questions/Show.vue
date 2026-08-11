@@ -1,7 +1,19 @@
 <script setup lang="ts">
-defineProps({
-    question: Object,
-});
+interface Question {
+    id: number;
+    title: string;
+    description: string;
+    created_at: string;
+
+    user: {
+        id: number;
+        name: string;
+    };
+}
+
+defineProps<{
+    question: Question;
+}>();
 </script>
 
 <template>
