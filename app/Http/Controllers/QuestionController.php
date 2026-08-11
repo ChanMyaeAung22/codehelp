@@ -10,12 +10,12 @@ use Inertia\Response;
 
 class QuestionController extends Controller
 {
-    public function create()
+    public function create(): Response
     {
         return Inertia::render('questions/Create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -35,7 +35,7 @@ class QuestionController extends Controller
             ->with('success', 'Question posted successfully!');
     }
 
-    public function index()
+    public function index(): Response
     {
         $questions = Question::with([
             'user',
@@ -52,17 +52,16 @@ class QuestionController extends Controller
     }
 
     public function show(Question $question)
-    {
-        $question->load([
-            'user',
-            'answers.user',
-            'comments.user',
-            'tags',
-            'votes',
-        ]);
+{
+    $question->load([
+        'user',
+        'answers.user',
+        'answers.votes',
+        'votes',
+    ]);
 
-        return Inertia::render('questions/Show', [
-            'question' => $question,
-        ]);
-    }
+    return Inertia::render('questions/Show', [
+        'question' => $question,
+    ]);
+}
 }

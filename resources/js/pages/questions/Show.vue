@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 
 interface User {
     id: number;
@@ -11,6 +11,11 @@ interface Answer {
     content: string;
     created_at: string;
     user: User;
+    votes: {
+        id: number;
+        user_id: number;
+        vote_type: string;
+    }[];
 }
 
 interface Question {
@@ -19,6 +24,11 @@ interface Question {
     description: string;
     created_at: string;
     user: User;
+    votes: {
+        id: number;
+        user_id: number;
+        vote_type: string;
+    }[];
     answers: Answer[];
 }
 
@@ -30,12 +40,24 @@ const form = useForm({
     content: '',
 });
 
+const voteQuestion = (questionId: number, voteType: string) => {
+    router.post(`/questions/${questionId}/vote`, {
+        vote_type: voteType,
+    });
+};
+
 const submitAnswer = () => {
     form.post(`/questions/${props.question.id}/answers`, {
         preserveScroll: true,
         onSuccess: () => {
             form.reset();
         },
+    });
+};
+
+const voteAnswer = (answerId: number, voteType: string) => {
+    router.post(`/answers/${answerId}/vote`, {
+        vote_type: voteType,
     });
 };
 </script>
@@ -63,6 +85,21 @@ const submitAnswer = () => {
             </div>
         </div>
 
+        <!-- Question Voting -->
+        <div class="mt-6 flex items-center gap-3">
+            <button
+                type="button"
+                @click="voteQuestion(question.id, 'up')"
+                class="rounded-xl border border-gray-200 px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-green-300 hover:bg-green-50"
+            >
+                👍 Upvote
+            </button>
+
+            <span class="font-semibold text-gray-700">
+                {{ question.votes.length }}
+            </span>
+        </div>
+
         <!-- Answers -->
         <div class="mt-10">
             <h2 class="mb-6 text-2xl font-bold text-gray-800">
@@ -78,6 +115,21 @@ const submitAnswer = () => {
                 <p class="leading-7 text-gray-700">
                     {{ answer.content }}
                 </p>
+
+                <!-- Answer Voting -->
+                <div class="mt-5 flex items-center gap-3">
+                    <button
+                        type="button"
+                        @click="voteAnswer(answer.id, 'up')"
+                        class="rounded-xl border border-gray-200 px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-green-300 hover:bg-green-50"
+                    >
+                        👍 Upvote
+                    </button>
+
+                    <span class="font-semibold text-gray-700">
+                        {{ answer.votes.length }}
+                    </span>
+                </div>
 
                 <div class="mt-6 flex items-center justify-between">
                     <div class="text-sm text-gray-500">

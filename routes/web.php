@@ -3,15 +3,15 @@
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\QuestionController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\QuestionVoteController;
+use App\Http\Controllers\AnswerVoteController;
 
 Route::inertia('/', 'Welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
-});
 
-Route::middleware(['auth', 'verified'])->group(function () {
-
+    //Questions
     Route::get('/questions', [QuestionController::class, 'index'])
         ->name('questions.index');
 
@@ -27,6 +27,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/questions/{question}/answers', [AnswerController::class, 'store'])
         ->middleware('auth')
         ->name('answers.store');
+
+    //Voting
+    Route::post('/questions/{question}/vote', [QuestionVoteController::class, 'store'])
+    ->name('questions.vote');
+
+    Route::post('/answers/{answer}/vote', [AnswerVoteController::class, 'store'])
+    ->name('answers.vote');
 });
+
+
 
 require __DIR__.'/settings.php';

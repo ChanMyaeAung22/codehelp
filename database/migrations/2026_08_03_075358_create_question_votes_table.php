@@ -23,7 +23,7 @@ return new class extends Migration
                 ->constrained()
                 ->onDelete('cascade');
 
-            $table->tinyInteger('vote_type');
+            $table->enum('vote_type', ['up', 'down']);
 
             $table->timestamps();
 
