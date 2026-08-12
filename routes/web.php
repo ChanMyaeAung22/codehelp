@@ -5,6 +5,7 @@ use App\Http\Controllers\QuestionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QuestionVoteController;
 use App\Http\Controllers\AnswerVoteController;
+use App\Http\Controllers\CommentController;
 
 Route::inertia('/', 'Welcome')->name('home');
 
@@ -38,6 +39,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/answers/{answer}/vote', [AnswerVoteController::class, 'store'])
     ->name('answers.vote');
+
+    //Comment
+    Route::post('/comments', [CommentController::class, 'store'])
+    ->middleware('auth')
+    ->name('comments.store');
 });
 
 

@@ -52,16 +52,18 @@ class QuestionController extends Controller
     }
 
     public function show(Question $question)
-{
-    $question->load([
-        'user',
-        'answers.user',
-        'answers.votes',
-        'votes',
-    ]);
+    {
+        $question->load([
+            'user',
+            'answers.user',
+            'answers.votes',
+            'votes',
+            'answers.comments.user',
+            'comments.user',
+        ]);
 
-    return Inertia::render('questions/Show', [
-        'question' => $question,
-    ]);
-}
+        return Inertia::render('questions/Show', [
+            'question' => $question,
+        ]);
+    }
 }

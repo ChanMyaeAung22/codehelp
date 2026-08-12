@@ -17,6 +17,12 @@ interface Answer {
         user_id: number;
         vote_type: string;
     }[];
+    comments: {
+        id: number;
+        content: string;
+        created_at: string;
+        user: User;
+    }[];
 }
 
 interface Question {
@@ -31,6 +37,14 @@ interface Question {
         vote_type: string;
     }[];
     answers: Answer[];
+    comments: Comment[];
+}
+
+interface Comment {
+    id: number;
+    content: string;
+    created_at: string;
+    user: User;
 }
 
 const props = defineProps<{
@@ -73,6 +87,39 @@ const acceptAnswer = (answerId: number) => {
 };
 
 const page = usePage();
+
+const commentForm = useForm({
+    content: '',
+    commentable_type: '',
+    commentable_id: 0,
+});
+
+const submitComment = (
+    commentableType: 'question' | 'answer',
+    commentableId: number,
+) => {
+    commentForm.commentable_type = commentableType;
+    commentForm.commentable_id = commentableId;
+
+    commentForm.post('/comments', {
+        preserveScroll: true,
+        onSuccess: () => {
+            commentForm.reset();
+        },
+    });
+};
+
+const submitAnswerComment = (answerId: number) => {
+    commentForm.commentable_type = 'answer';
+    commentForm.commentable_id = answerId;
+
+    commentForm.post('/comments', {
+        preserveScroll: true,
+        onSuccess: () => {
+            commentForm.reset();
+        },
+    });
+};
 </script>
 
 <template>
@@ -112,6 +159,62 @@ const page = usePage();
                 {{ question.votes.length }}
             </span>
         </div>
+
+        <!-- Question Comments -->
+<div class="mt-8 border-t border-gray-100 pt-6">
+    <h3 class="mb-4 text-lg font-semibold text-gray-800">
+        {{ question.comments.length }} Comments
+    </h3>
+
+    <!-- Existing Comments -->
+    <div
+        v-for="comment in question.comments"
+        :key="comment.id"
+        class="mb-3 border-b border-gray-100 pb-3"
+    >
+        <p class="text-sm text-gray-700">
+            {{ comment.content }}
+        </p>
+
+        <div class="mt-1 text-xs text-gray-400">
+            {{ comment.user.name }}
+            ·
+            {{ new Date(comment.created_at).toLocaleDateString() }}
+        </div>
+    </div>
+
+    <!-- Add Comment -->
+    <form
+        @submit.prevent="submitComment('question', question.id)"
+        class="mt-4"
+    >
+        <textarea
+            v-model="commentForm.content"
+            rows="3"
+            placeholder="Add a comment..."
+            class="w-full resize-none rounded-xl border border-gray-300 p-3 text-sm text-gray-700 focus:border-blue-500 focus:ring-blue-500"
+        ></textarea>
+
+        <p
+            v-if="commentForm.errors.content"
+            class="mt-2 text-sm text-red-500"
+        >
+            {{ commentForm.errors.content }}
+        </p>
+
+        <button
+            type="submit"
+            :disabled="commentForm.processing"
+            class="mt-2 rounded-xl bg-gray-800 px-4 py-2 text-sm text-white transition-all duration-300 hover:scale-105 hover:bg-gray-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+            {{
+                commentForm.processing
+                    ? 'Posting...'
+                    : 'Add Comment'
+            }}
+        </button>
+    </form>
+</div>
 
         <!-- Answers -->
         <div class="mt-10">
@@ -179,6 +282,50 @@ const page = usePage();
                      {{ answer.is_accepted ? '✓ Unaccept Answer' : '✓ Accept Answer' }}
                 </button>
             </div>
+
+            <!-- Answer Comments -->
+<div class="mt-6 border-t pt-4">
+    <h4 class="text-sm font-semibold text-gray-700">
+        {{ answer.comments.length }}
+        {{ answer.comments.length === 1 ? 'Comment' : 'Comments' }}
+    </h4>
+
+    <div
+        v-for="comment in answer.comments"
+        :key="comment.id"
+        class="mt-3 border-b pb-3"
+    >
+        <p class="text-sm text-gray-800">
+            {{ comment.content }}
+        </p>
+
+        <p class="mt-1 text-xs text-gray-400">
+            {{ comment.user.name }} ·
+            {{ new Date(comment.created_at).toLocaleDateString() }}
+        </p>
+    </div>
+
+    <!-- Add Answer Comment -->
+    <form
+        class="mt-4"
+        @submit.prevent="submitAnswerComment(answer.id)"
+    >
+        <textarea
+            v-model="commentForm.content"
+            rows="3"
+            placeholder="Add a comment..."
+            class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:border-gray-500 focus:outline-none"
+        ></textarea>
+
+        <button
+            type="submit"
+            :disabled="commentForm.processing"
+            class="mt-2 rounded-xl bg-gray-900 px-4 py-2 text-sm text-white transition-all duration-300 hover:scale-105 hover:bg-gray-800 active:scale-95 disabled:opacity-50"
+        >
+            {{ commentForm.processing ? 'Adding...' : 'Add Comment' }}
+        </button>
+    </form>
+</div>
             </div>
 
 
