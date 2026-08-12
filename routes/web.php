@@ -29,6 +29,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('auth')
         ->name('answers.store');
 
+    //question edit
+    Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])
+    ->name('questions.edit');
+
+    //question update
+    Route::put('/questions/{question}', [QuestionController::class, 'update'])
+    ->name('questions.update');
+
     //Accept Answer
     Route::post('/questions/{question}/answers/{answer}/accept',[AnswerController::class, 'accept'])
         ->name('answers.accept');
@@ -44,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/comments', [CommentController::class, 'store'])
     ->middleware('auth')
     ->name('comments.store');
+
 });
 
 

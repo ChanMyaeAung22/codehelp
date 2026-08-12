@@ -66,4 +66,32 @@ class QuestionController extends Controller
             'question' => $question,
         ]);
     }
-}
+
+    public function edit(Question $question): Response
+    {
+        abort_unless(auth()->id() === $question->user_id, 403);
+
+        return Inertia::render('questions/Edit', [
+        'question' => $question,
+        ]);
+    }
+
+    public function update(Request $request, Question $question): RedirectResponse
+    {
+        abort_unless(auth()->id() === $question->user_id, 403); //Only the person who owns the question can edit it.
+
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+        ]);
+
+        $question->update([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+        ]);
+
+        return redirect()
+            ->route('questions.show', $question)
+            ->with('success', 'Question updated successfully!');
+    }
+    }
