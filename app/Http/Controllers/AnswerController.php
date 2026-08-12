@@ -6,6 +6,8 @@ use App\Models\Answer;
 use App\Models\Question;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class AnswerController extends Controller
 {
@@ -23,8 +25,44 @@ class AnswerController extends Controller
         return redirect()->route('questions.show', $question);
     }
 
+    public function edit(
+        Question $question,
+        Answer $answer
+    ): Response {
+        abort_unless($answer->question_id === $question->id, 404);
+
+        abort_unless(auth()->id() === $answer->user_id, 403);
+
+        return Inertia::render('answers/Edit', [
+            'question' => $question,
+            'answer' => $answer,
+        ]);
+    }
+
+    public function update(
+        Request $request,
+        Question $question,
+        Answer $answer
+    ): RedirectResponse {
+        abort_unless($answer->question_id === $question->id, 404);
+
+        abort_unless(auth()->id() === $answer->user_id, 403);
+
+        $validated = $request->validate([
+            'content' => ['required', 'string', 'min:5'],
+        ]);
+
+        $answer->update([
+            'content' => $validated['content'],
+        ]);
+
+        return redirect()
+            ->route('questions.show', $question)
+            ->with('success', 'Answer updated successfully!');
+    }
+
     public function accept(
-         Request $request,
+    Request $request,
     Question $question,
     Answer $answer
     ): RedirectResponse {

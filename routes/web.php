@@ -40,6 +40,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //Accept Answer
     Route::post('/questions/{question}/answers/{answer}/accept',[AnswerController::class, 'accept'])
         ->name('answers.accept');
+    
+    //Edit Answer
+    Route::get(
+        '/questions/{question}/answers/{answer}/edit',
+        [AnswerController::class, 'edit']
+        )->name('answers.edit');
+    
+    //Delete Answer
+    Route::put(
+        '/questions/{question}/answers/{answer}',
+        [AnswerController::class, 'update']
+        )->name('answers.update');
 
     //Voting
     Route::post('/questions/{question}/vote', [QuestionVoteController::class, 'store'])

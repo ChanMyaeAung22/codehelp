@@ -264,8 +264,18 @@ const submitAnswerComment = (answerId: number) => {
                         👤 {{ answer.user.name }}
                     </div>
 
-                    <div class="text-sm text-gray-400">
-                        {{ new Date(answer.created_at).toLocaleDateString() }}
+                    <div class="flex items-center gap-4">
+                        <div class="text-sm text-gray-400">
+                            {{ new Date(answer.created_at).toLocaleDateString() }}
+                        </div>
+
+                        <a
+                            v-if="page.props.auth.user?.id === answer.user.id"
+                            :href="`/questions/${question.id}/answers/${answer.id}/edit`"
+                            class="rounded-lg border border-blue-500 px-3 py-1.5 text-sm text-blue-600 transition hover:bg-blue-50"
+                            >
+                            Edit Answer
+                        </a>
                     </div>
                 </div>
 
