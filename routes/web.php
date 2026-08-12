@@ -28,6 +28,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('auth')
         ->name('answers.store');
 
+    //Accept Answer
+    Route::post('/questions/{question}/answers/{answer}/accept',[AnswerController::class, 'accept'])
+        ->name('answers.accept');
+
     //Voting
     Route::post('/questions/{question}/vote', [QuestionVoteController::class, 'store'])
     ->name('questions.vote');

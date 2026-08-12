@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router, useForm } from '@inertiajs/vue3';
+import { router, useForm, usePage } from '@inertiajs/vue3';
 
 interface User {
     id: number;
@@ -10,6 +10,7 @@ interface Answer {
     id: number;
     content: string;
     created_at: string;
+    is_accepted: boolean;
     user: User;
     votes: {
         id: number;
@@ -60,6 +61,18 @@ const voteAnswer = (answerId: number, voteType: string) => {
         vote_type: voteType,
     });
 };
+
+const acceptAnswer = (answerId: number) => {
+    router.post(
+        `/questions/${props.question.id}/answers/${answerId}/accept`,
+        {},
+        {
+            preserveScroll: true,
+        },
+    );
+};
+
+const page = usePage();
 </script>
 
 <template>
@@ -110,8 +123,20 @@ const voteAnswer = (answerId: number, voteType: string) => {
             <div
                 v-for="answer in question.answers"
                 :key="answer.id"
-                class="mb-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
+                class="mb-5 rounded-2xl border p-6 shadow-sm transition-all duration-300"
+                :class="
+                answer.is_accepted
+                ? 'border-green-300 bg-green-50'
+                : 'border-gray-100 bg-white'
+                "
             >
+                <div
+                     v-if="answer.is_accepted"
+                    class="mb-4 flex items-center gap-2 font-semibold text-green-600"
+>
+                    <span>✓</span>
+                    <span>Accepted Answer</span>
+                </div>
                 <p class="leading-7 text-gray-700">
                     {{ answer.content }}
                 </p>
@@ -140,7 +165,22 @@ const voteAnswer = (answerId: number, voteType: string) => {
                         {{ new Date(answer.created_at).toLocaleDateString() }}
                     </div>
                 </div>
+
+                <!-- Accept Answer -->
+             <div
+                  v-if="question.user.id === page.props.auth.user?.id"
+                  class="mt-5"
+            >
+                <button
+                    type="button"
+                    @click="acceptAnswer(answer.id)"
+                    class="rounded-xl border border-green-500 px-4 py-2 text-green-600 transition-all duration-300 hover:scale-105 hover:bg-green-50 active:scale-95"
+    >
+                     {{ answer.is_accepted ? '✓ Unaccept Answer' : '✓ Accept Answer' }}
+                </button>
             </div>
+            </div>
+
 
             <!-- No Answers -->
             <div
