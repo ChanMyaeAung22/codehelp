@@ -91,4 +91,21 @@ class AnswerController extends Controller
 
     return back();
 }
+
+    public function destroy(
+        Question $question,
+        Answer $answer
+    ):  RedirectResponse {
+        // Make sure this answer belongs to this question.
+        abort_unless($answer->question_id === $question->id, 404);
+
+        // Only the answer owner can delete the answer.
+        abort_unless(auth()->id() === $answer->user_id, 403);
+
+        $answer->delete();
+
+        return redirect()
+            ->route('questions.show', $question)
+            ->with('success', 'Answer deleted successfully!');
+    }
 }

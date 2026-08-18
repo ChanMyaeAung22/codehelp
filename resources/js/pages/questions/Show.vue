@@ -137,6 +137,16 @@ const deleteQuestion = () => {
 
     router.delete(`/questions/${props.question.id}`);
 };
+
+function deleteAnswer(answerId: number) {
+    if (!confirm('Are you sure you want to delete this answer?')) {
+        return;
+    }
+
+    router.delete(
+        `/questions/${props.question.id}/answers/${answerId}`
+    );
+}
 </script>
 
 <template>
@@ -323,6 +333,15 @@ const deleteQuestion = () => {
                             >
                             Edit Answer
                         </a>
+                        
+                        <button
+                            v-if="page.props.auth.user?.id === answer.user.id"
+                            type="button"
+                            @click="deleteAnswer(answer.id)"
+                            class="rounded-lg border border-red-500 px-3 py-1.5 text-sm text-red-600 transition hover:bg-red-50"
+                        >
+                            Delete Answer
+                        </button>
                     </div>
                 </div>
 
