@@ -129,6 +129,14 @@ const submitAnswerComment = (answerId: number) => {
         },
     });
 };
+
+const deleteQuestion = () => {
+    if (!confirm('Are you sure you want to delete this question?')) {
+        return;
+    }
+
+    router.delete(`/questions/${props.question.id}`);
+};
 </script>
 
 <template>
@@ -164,6 +172,24 @@ const submitAnswerComment = (answerId: number) => {
                 </div>
             </div>
         </div>
+
+        <!-- Question Actions -->
+    <div
+        v-if="page.props.auth.user.id === question.user.id"
+        class="mt-6 flex gap-3">
+        <a
+            :href="`/questions/${question.id}/edit`"
+            class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+                Edit
+        </a>
+
+        <button
+            type="button"
+            @click="deleteQuestion"
+            class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">
+                Delete
+        </button>
+    </div>
 
 
         <!-- Question Voting -->

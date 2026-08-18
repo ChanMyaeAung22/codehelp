@@ -37,6 +37,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/questions/{question}', [QuestionController::class, 'update'])
     ->name('questions.update');
 
+    //question delete
+    Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])
+    ->name('questions.destroy');
+
     //Accept Answer
     Route::post('/questions/{question}/answers/{answer}/accept',[AnswerController::class, 'accept'])
         ->name('answers.accept');

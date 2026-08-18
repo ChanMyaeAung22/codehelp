@@ -114,7 +114,7 @@ class QuestionController extends Controller
     }
 
     public function byTag(Tag $tag): Response
-    {
+    {   
         $questions = $tag->questions()
             ->with([
                 'user',
@@ -129,5 +129,16 @@ class QuestionController extends Controller
             'questions' => $questions,
             'selectedTag' => $tag,
         ]);
+    }
+
+    public function destroy(Question $question): RedirectResponse
+    {
+        abort_unless(auth()->id() === $question->user_id, 403);
+
+        $question->delete();
+
+        return redirect()
+            ->route('questions.index')
+            ->with('success', 'Question deleted successfully!');
     }
 }
