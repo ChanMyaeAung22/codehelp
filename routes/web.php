@@ -40,6 +40,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //Accept Answer
     Route::post('/questions/{question}/answers/{answer}/accept',[AnswerController::class, 'accept'])
         ->name('answers.accept');
+
+    //Filter by Tags
+    Route::get('/questions/tag/{tag:slug}', [QuestionController::class, 'byTag'])
+    ->name('questions.by-tag');
     
     //Edit Answer
     Route::get(
@@ -47,7 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         [AnswerController::class, 'edit']
         )->name('answers.edit');
     
-    //Delete Answer
+    //Update Answer
     Route::put(
         '/questions/{question}/answers/{answer}',
         [AnswerController::class, 'update']

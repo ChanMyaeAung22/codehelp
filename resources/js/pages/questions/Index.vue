@@ -19,10 +19,19 @@ interface Question {
     votes: Array<{
         id: number;
     }>;
+
+    tags: Tag[];
+}
+
+interface Tag {
+    id: number;
+    name: string;
+    slug: string;
 }
 
 defineProps<{
     questions: Question[];
+    selectedTag?: Tag;
 }>();
 </script>
 
@@ -64,6 +73,28 @@ defineProps<{
             <p class="mt-4 leading-7 text-gray-600">
                 {{ question.description }}
             </p>
+
+            <div class="mt-3 flex flex-wrap gap-2">
+                <a
+                    v-for="tag in question.tags"
+                    :key="tag.id"
+                    :href="`/questions/tag/${tag.slug}`"
+                    class="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 hover:bg-blue-200">
+                        {{ tag.name }}
+                </a>
+            </div>
+
+            <div v-if="selectedTag" class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">
+                    Questions tagged "{{ selectedTag.name }}"
+                </h1>
+
+                <a
+                    href="/questions"
+                    class="mt-2 inline-block text-sm text-blue-600 hover:underline">
+                    ← View all questions
+                </a>
+            </div>
 
             <!-- Stats -->
             <div class="mt-6 flex gap-6 text-sm text-gray-500">

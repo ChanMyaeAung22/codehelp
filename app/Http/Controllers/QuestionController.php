@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Response;
+use App\Models\Tag;
+use Illuminate\Support\Str;
 
 class QuestionController extends Controller
 {
@@ -20,15 +22,30 @@ class QuestionController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['required', 'string', 'max:50'],
         ]);
 
-        Question::create([
+        $question = Question::create([
             'user_id' => auth()->id(),
             'title' => $validated['title'],
             'description' => $validated['description'],
             'views' => 0,
             'is_solved' => false,
         ]);
+
+        if (!empty($validated['tags'])) {
+        $tagIds = collect($validated['tags'])->map(function ($tagName) {
+        $tag = Tag::firstOrCreate(
+            ['name' => $tagName],
+            ['slug' => Str::slug($tagName)]
+            );
+
+            return $tag->id;
+            });
+
+            $question->tags()->sync($tagIds);
+        }
 
         return redirect()
             ->route('dashboard')
@@ -58,6 +75,7 @@ class QuestionController extends Controller
             'answers.user',
             'answers.votes',
             'votes',
+            'tags',
             'answers.comments.user',
             'comments.user',
         ]);
@@ -94,4 +112,22 @@ class QuestionController extends Controller
             ->route('questions.show', $question)
             ->with('success', 'Question updated successfully!');
     }
+
+    public function byTag(Tag $tag): Response
+    {
+        $questions = $tag->questions()
+            ->with([
+                'user',
+                'answers',
+                'tags',
+                'votes',
+            ])
+            ->latest()
+            ->get();
+
+        return Inertia::render('questions/Index', [
+            'questions' => $questions,
+            'selectedTag' => $tag,
+        ]);
     }
+}

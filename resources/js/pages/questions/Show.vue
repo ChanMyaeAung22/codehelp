@@ -37,7 +37,10 @@ interface Question {
         vote_type: string;
     }[];
     answers: Answer[];
+
     comments: Comment[];
+
+    tags: Tag[];
 }
 
 interface Comment {
@@ -45,6 +48,12 @@ interface Comment {
     content: string;
     created_at: string;
     user: User;
+}
+
+interface Tag {
+    id: number;
+    name: string;
+    slug: string;
 }
 
 const props = defineProps<{
@@ -134,6 +143,17 @@ const submitAnswerComment = (answerId: number) => {
                 {{ question.description }}
             </p>
 
+        <!-- Question Tag -->
+        <div class="mt-4 flex flex-wrap gap-2">
+            <a  
+                :href="`/questions/tag/${tag.slug}`"
+                v-for="tag in question.tags"
+                :key="tag.id"
+                class="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
+                    {{ tag.name }}
+            </a>
+        </div>
+
             <div class="mt-8 flex items-center justify-between">
                 <div class="text-sm text-gray-500">
                     👤 Asked by {{ question.user.name }}
@@ -144,6 +164,7 @@ const submitAnswerComment = (answerId: number) => {
                 </div>
             </div>
         </div>
+
 
         <!-- Question Voting -->
         <div class="mt-6 flex items-center gap-3">
