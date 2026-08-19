@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QuestionVoteController;
 use App\Http\Controllers\AnswerVoteController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\Admin\AdminController;
 
 Route::inertia('/', 'Welcome')->name('home');
 
@@ -76,7 +77,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/comments', [CommentController::class, 'store'])
     ->middleware('auth')
     ->name('comments.store');
+});
 
+//temporary admin route
+Route::middleware(['auth', 'verified', 'admin'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'dashboard'])
+    ->name('admin.dashboard');
 });
 
 
