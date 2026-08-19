@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 interface Question {
     id: number;
@@ -33,6 +34,14 @@ defineProps<{
     questions: Question[];
     selectedTag?: Tag;
 }>();
+
+const searchTerm = ref('');
+
+function search() {
+    router.get('/questions', {
+        search: searchTerm.value,
+    });
+}
 </script>
 
 <template>
@@ -53,6 +62,28 @@ defineProps<{
             >
                 Ask Question
             </Link>
+        </div>
+
+        <!-- Search -->
+        <div class="mb-8">
+            <form
+                @submit.prevent="search"
+                class="flex gap-3"
+            >
+                <input
+                    v-model="searchTerm"
+                    type="text"
+                    placeholder="Search questions..."
+                    class="flex-1 rounded-xl border border-gray-300 px-4 py-3 focus:border-blue-500 focus:outline-none"
+                />
+
+                <button
+                    type="submit"
+                    class="rounded-xl bg-blue-600 px-6 py-3 text-white transition-all duration-300 hover:bg-blue-700"
+                >
+                    Search
+                </button>
+            </form>
         </div>
 
         <!-- Question Cards -->

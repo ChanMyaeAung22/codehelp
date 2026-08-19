@@ -52,19 +52,31 @@ class QuestionController extends Controller
             ->with('success', 'Question posted successfully!');
     }
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $search = $request->input('search');
+
         $questions = Question::with([
             'user',
             'answers',
             'tags',
             'votes',
         ])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('title', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhereHas('tags', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
             ->latest()
             ->get();
 
         return Inertia::render('questions/Index', [
             'questions' => $questions,
+            'search' => $search,
         ]);
     }
 
