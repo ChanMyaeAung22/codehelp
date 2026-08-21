@@ -73,4 +73,9 @@ class User extends Authenticatable implements PasskeyUser
     {
         return $this->hasMany(AnswerVote::class);
     }
+
+    public function reports(): HasMany
+    {
+        return $this->hasMany(Report::class);
+    }   
 }

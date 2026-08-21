@@ -42,4 +42,9 @@ class Question extends Model
     {
         return $this->hasMany(QuestionVote::class);
     }
+
+    public function reports(): MorphMany
+    {
+        return $this->morphMany(Report::class, 'reportable');
+    }
 }

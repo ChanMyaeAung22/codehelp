@@ -7,6 +7,8 @@ use App\Http\Controllers\QuestionVoteController;
 use App\Http\Controllers\AnswerVoteController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\ReportController;
+
 
 Route::inertia('/', 'Welcome')->name('home');
 
@@ -77,12 +79,60 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/comments', [CommentController::class, 'store'])
     ->middleware('auth')
     ->name('comments.store');
+
+    //Report to Admin
+    Route::post('/reports', [ReportController::class, 'store'])
+    ->name('reports.store');
+
+    Route::get('/questions/{question}/report', [ReportController::class, 'create'])
+    ->name('reports.create');
+
+    Route::get('/answers/{answer}/report', [ReportController::class, 'createAnswer'])
+    ->name('reports.answer.create');
+
+    Route::patch('/admin/reports/{report}/status', [ReportController::class, 'updateStatus'])
+    ->name('admin.reports.status');
+
+    Route::get('/comments/{comment}/report', [ReportController::class, 'createComment'])
+    ->name('reports.comment.create');
 });
 
-//temporary admin route
+//admin route
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard'])
     ->name('admin.dashboard');
+
+    Route::get('/admin/users', [AdminController::class, 'users'])
+        ->name('admin.users');
+
+    Route::get('/admin/questions', [AdminController::class, 'questions'])
+        ->name('admin.questions');
+
+    Route::delete('/admin/questions/{question}', [AdminController::class, 'deleteQuestion'])
+        ->name('admin.questions.delete');
+
+    Route::get('/admin/answers', [AdminController::class, 'answers'])
+        ->name('admin.answers');
+
+    Route::delete('/admin/answers/{answer}', [AdminController::class, 'deleteAnswer'])
+        ->name('admin.answers.delete');
+
+    Route::get('/admin/reports', [AdminController::class, 'reports'])
+        ->name('admin.reports');
+
+    Route::delete('/admin/reports/{report}', [AdminController::class, 'deleteReport'])
+        ->name('admin.reports.delete');
+
+    Route::get('/admin/reports', [ReportController::class, 'index'])
+        ->name('admin.reports');
+
+    Route::get('/admin/comments', [AdminController::class, 'comments'])
+        ->name('admin.comments');
+
+    Route::delete('/admin/comments/{comment}', [AdminController::class, 'deleteComment'])
+        ->name('admin.comments.delete');
+
+    
 });
 
 

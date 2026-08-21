@@ -51,4 +51,9 @@ class Answer extends Model
     {
         return $this->hasMany(AnswerVote::class);
     }
+
+    public function reports(): MorphMany
+    {
+        return $this->morphMany(Report::class, 'reportable');
+    }
 }

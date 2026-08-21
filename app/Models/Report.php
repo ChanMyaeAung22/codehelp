@@ -4,18 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class Comment extends Model
+class Report extends Model
 {
     protected $fillable = [
         'user_id',
-        'content',
+        'reason',
+        'description',
+        'status',
     ];
 
     /**
-     * The user who wrote the comment.
+     * The user who submitted the report.
      */
     public function user(): BelongsTo
     {
@@ -23,15 +24,12 @@ class Comment extends Model
     }
 
     /**
-     * The model (Question or Answer) this comment belongs to.
+     * The model being reported.
+     *
+     * Can be a Question, Answer, or Comment.
      */
-    public function commentable(): MorphTo
+    public function reportable(): MorphTo
     {
         return $this->morphTo();
-    }
-
-    public function reports(): MorphMany
-    {
-        return $this->morphMany(Report::class, 'reportable');
     }
 }

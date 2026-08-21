@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router, useForm, usePage } from '@inertiajs/vue3';
+import { Link ,router, useForm, usePage } from '@inertiajs/vue3';
 
 interface User {
     id: number;
@@ -147,6 +147,7 @@ function deleteAnswer(answerId: number) {
         `/questions/${props.question.id}/answers/${answerId}`
     );
 }
+
 </script>
 
 <template>
@@ -181,9 +182,8 @@ function deleteAnswer(answerId: number) {
                     {{ new Date(question.created_at).toLocaleDateString() }}
                 </div>
             </div>
-        </div>
 
-        <!-- Question Actions -->
+             <!-- Question Actions -->
     <div
         v-if="page.props.auth.user.id === question.user.id"
         class="mt-6 flex gap-3">
@@ -201,6 +201,13 @@ function deleteAnswer(answerId: number) {
         </button>
     </div>
 
+        <Link
+            v-if="page.props.auth.user?.id !== question.user.id"
+            :href="`/questions/${question.id}/report`"
+            class="rounded-lg border border-red-300 px-3 py-1.5 text-sm text-red-600 transition hover:bg-red-50 mt-10">
+                Report
+        </Link>
+
 
         <!-- Question Voting -->
         <div class="mt-6 flex items-center gap-3">
@@ -215,6 +222,9 @@ function deleteAnswer(answerId: number) {
             <span class="font-semibold text-gray-700">
                 {{ question.votes.length }}
             </span>
+        </div>
+
+
         </div>
 
         <!-- Question Comments -->
@@ -233,10 +243,19 @@ function deleteAnswer(answerId: number) {
             {{ comment.content }}
         </p>
 
-        <div class="mt-1 text-xs text-gray-400">
-            {{ comment.user.name }}
-            ·
-            {{ new Date(comment.created_at).toLocaleDateString() }}
+        <div class="mt-1 flex items-center gap-3 text-xs text-gray-400">
+            <span>
+                {{ comment.user.name }}
+                    ·
+                {{ new Date(comment.created_at).toLocaleDateString() }}
+            </span>
+
+            <Link
+                v-if="Number(page.props.auth.user?.id) !== Number(comment.user?.id)"
+                :href="`/comments/${comment.id}/report?return_url=/questions/${question.id}`"
+                class="text-red-500 hover:underline">
+                    Report Comment
+            </Link>
         </div>
     </div>
 
@@ -272,6 +291,32 @@ function deleteAnswer(answerId: number) {
         </button>
     </form>
 </div>
+
+ <!-- Add Answer -->
+        <div class="mt-10">
+            <h2 class="mb-6 text-2xl font-bold text-gray-800">Your Answer</h2>
+
+            <form @submit.prevent="submitAnswer">
+                <textarea
+                    v-model="form.content"
+                    rows="6"
+                    placeholder="Write your answer here..."
+                    class="w-full resize-none rounded-xl border border-gray-300 p-4 text-gray-700 focus:border-blue-500 focus:ring-blue-500"
+                ></textarea>
+
+                <p v-if="form.errors.content" class="mt-2 text-sm text-red-500">
+                    {{ form.errors.content }}
+                </p>
+
+                <button
+                    type="submit"
+                    :disabled="form.processing"
+                    class="mt-4 rounded-xl bg-blue-600 px-6 py-3 text-white transition-all duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                    {{ form.processing ? 'Posting...' : 'Post Answer' }}
+                </button>
+            </form>
+        </div>  
 
         <!-- Answers -->
         <div class="mt-10">
@@ -327,12 +372,20 @@ function deleteAnswer(answerId: number) {
                         </div>
 
                         <a
-                            v-if="page.props.auth.user?.id === answer.user.id"
+                            v-if="Number(page.props.auth.user?.id) === Number(answer.user?.id)"
                             :href="`/questions/${question.id}/answers/${answer.id}/edit`"
                             class="rounded-lg border border-blue-500 px-3 py-1.5 text-sm text-blue-600 transition hover:bg-blue-50"
                             >
                             Edit Answer
                         </a>
+
+                       <Link
+                            v-if="Number(page.props.auth.user?.id) !== Number(answer.user?.id)"
+                            :href="`/answers/${answer.id}/report?return_url=/questions/${question.id}`"
+                            class="rounded-lg border border-red-300 px-3 py-1.5 text-sm text-red-600 transition hover:bg-red-50"
+                        >
+                            Report Answer
+                        </Link>
                         
                         <button
                             v-if="page.props.auth.user?.id === answer.user.id"
@@ -375,10 +428,19 @@ function deleteAnswer(answerId: number) {
             {{ comment.content }}
         </p>
 
-        <p class="mt-1 text-xs text-gray-400">
-            {{ comment.user.name }} ·
-            {{ new Date(comment.created_at).toLocaleDateString() }}
-        </p>
+        <div class="mt-1 flex items-center gap-3 text-xs text-gray-400">
+            <span>
+                {{ comment.user.name }} ·
+                {{ new Date(comment.created_at).toLocaleDateString() }}
+            </span>
+
+            <Link
+                v-if="Number(page.props.auth.user?.id) !== Number(comment.user?.id)"
+                :href="`/comments/${comment.id}/report?return_url=/questions/${question.id}`"
+                class="text-red-500 hover:underline">
+                    Report Comment
+            </Link>
+        </div>
     </div>
 
     <!-- Add Answer Comment -->
@@ -418,30 +480,8 @@ function deleteAnswer(answerId: number) {
             </div>
         </div>
 
-        <!-- Add Answer -->
-        <div class="mt-10">
-            <h2 class="mb-6 text-2xl font-bold text-gray-800">Your Answer</h2>
-
-            <form @submit.prevent="submitAnswer">
-                <textarea
-                    v-model="form.content"
-                    rows="6"
-                    placeholder="Write your answer here..."
-                    class="w-full resize-none rounded-xl border border-gray-300 p-4 text-gray-700 focus:border-blue-500 focus:ring-blue-500"
-                ></textarea>
-
-                <p v-if="form.errors.content" class="mt-2 text-sm text-red-500">
-                    {{ form.errors.content }}
-                </p>
-
-                <button
-                    type="submit"
-                    :disabled="form.processing"
-                    class="mt-4 rounded-xl bg-blue-600 px-6 py-3 text-white transition-all duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                    {{ form.processing ? 'Posting...' : 'Post Answer' }}
-                </button>
-            </form>
-        </div>
+       
     </div>
+
+   
 </template>
