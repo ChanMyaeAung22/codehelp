@@ -12,94 +12,92 @@ use App\Http\Controllers\ReportController;
 
 Route::inertia('/', 'Welcome')->name('home');
 
-    // Public question browsing - guests can access
-    Route::get('/questions', [QuestionController::class, 'index'])
-        ->name('questions.index');
+// Public question browsing
+Route::get('/questions', [QuestionController::class, 'index'])
+    ->name('questions.index');
 
-    Route::get('/questions/{question}', [QuestionController::class, 'show'])
-        ->name('questions.show');
+// Tag route MUST come before /questions/{question}
+Route::get('/questions/tag/{tag:slug}', [QuestionController::class, 'byTag'])
+    ->name('questions.by-tag');
 
-    Route::get('/questions/tag/{tag:slug}', [QuestionController::class, 'byTag'])
-        ->name('questions.by-tag');
-
+// Authenticated routes
 Route::middleware(['auth', 'verified'])->group(function () {
+
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 
-    //Questions
-
+    // Create question
     Route::get('/questions/create', [QuestionController::class, 'create'])
         ->name('questions.create');
 
     Route::post('/questions', [QuestionController::class, 'store'])
         ->name('questions.store');
 
+    // Edit question
+    Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])
+        ->name('questions.edit');
+
+    Route::put('/questions/{question}', [QuestionController::class, 'update'])
+        ->name('questions.update');
+
+    Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])
+        ->name('questions.destroy');
+
+    // Answers
     Route::post('/questions/{question}/answers', [AnswerController::class, 'store'])
-        ->middleware('auth')
         ->name('answers.store');
 
-    //question edit
-    Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])
-    ->name('questions.edit');
+    Route::post(
+        '/questions/{question}/answers/{answer}/accept',
+        [AnswerController::class, 'accept']
+    )->name('answers.accept');
 
-    //question update
-    Route::put('/questions/{question}', [QuestionController::class, 'update'])
-    ->name('questions.update');
-
-    //question delete
-    Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])
-    ->name('questions.destroy');
-
-    //Accept Answer
-    Route::post('/questions/{question}/answers/{answer}/accept',[AnswerController::class, 'accept'])
-        ->name('answers.accept');
-
-    //Filter by Tags
-    
-    //Edit Answer
     Route::get(
         '/questions/{question}/answers/{answer}/edit',
         [AnswerController::class, 'edit']
-        )->name('answers.edit');
-    
-    //Update Answer
+    )->name('answers.edit');
+
     Route::put(
         '/questions/{question}/answers/{answer}',
         [AnswerController::class, 'update']
-        )->name('answers.update');
+    )->name('answers.update');
 
-    //Delete answer
-    Route::delete('/questions/{question}/answers/{answer}', [AnswerController::class, 'destroy'])
-    ->name('answers.destroy');
+    Route::delete(
+        '/questions/{question}/answers/{answer}',
+        [AnswerController::class, 'destroy']
+    )->name('answers.destroy');
 
-    //Voting
+    // Voting
     Route::post('/questions/{question}/vote', [QuestionVoteController::class, 'store'])
-    ->name('questions.vote');
+        ->name('questions.vote');
 
     Route::post('/answers/{answer}/vote', [AnswerVoteController::class, 'store'])
-    ->name('answers.vote');
+        ->name('answers.vote');
 
-    //Comment
+    // Comments
     Route::post('/comments', [CommentController::class, 'store'])
-    ->middleware('auth')
-    ->name('comments.store');
+        ->name('comments.store');
 
-    //Report to Admin
+    // Reports
     Route::post('/reports', [ReportController::class, 'store'])
-    ->name('reports.store');
+        ->name('reports.store');
 
     Route::get('/questions/{question}/report', [ReportController::class, 'create'])
-    ->name('reports.create');
+        ->name('reports.create');
 
     Route::get('/answers/{answer}/report', [ReportController::class, 'createAnswer'])
-    ->name('reports.answer.create');
-
-    Route::patch('/admin/reports/{report}/status', [ReportController::class, 'updateStatus'])
-    ->name('admin.reports.status');
+        ->name('reports.answer.create');
 
     Route::get('/comments/{comment}/report', [ReportController::class, 'createComment'])
-    ->name('reports.comment.create');
+        ->name('reports.comment.create');
+
+    Route::patch('/admin/reports/{report}/status', [ReportController::class, 'updateStatus'])
+        ->name('admin.reports.status');
 });
 
+// IMPORTANT: Keep this AFTER the specific question routes above.
+Route::get('/questions/{question}', [QuestionController::class, 'show'])
+    ->name('questions.show');
+    
 //admin route
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard'])

@@ -32,12 +32,10 @@ class AdminController extends Controller
         ]);
     }
 
-    public function users(Request $request): Response
+  public function users(Request $request)
 {
-    $search = $request->input('search');
-
     $users = User::query()
-        ->when($search, function ($query) use ($search) {
+        ->when($request->search, function ($query, $search) {
             $query->where(function ($query) use ($search) {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%");
@@ -50,7 +48,7 @@ class AdminController extends Controller
     return Inertia::render('admin/Users', [
         'users' => $users,
         'filters' => [
-            'search' => $search,
+            'search' => $request->search,
         ],
     ]);
 }
@@ -63,7 +61,8 @@ class AdminController extends Controller
         'votes',
     ])
         ->latest()
-        ->get();
+        ->paginate(10)
+        ->withQueryString();
 
     return Inertia::render('admin/Questions', [
         'questions' => $questions,
@@ -84,7 +83,8 @@ class AdminController extends Controller
 {
     $answers = Answer::with(['user', 'question'])
         ->latest()
-        ->get();
+        ->paginate(10)
+        ->withQueryString();
 
     return Inertia::render('admin/Answers', [
         'answers' => $answers,
