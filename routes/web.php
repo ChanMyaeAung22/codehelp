@@ -132,7 +132,17 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::delete('/admin/comments/{comment}', [AdminController::class, 'deleteComment'])
         ->name('admin.comments.delete');
 
-    
+    Route::patch('/admin/users/{user}/suspend', [AdminController::class, 'suspendUser'])
+        ->name('admin.users.suspend');
+
+    Route::patch('/admin/users/{user}/unsuspend', [AdminController::class, 'unsuspendUser'])
+        ->name('admin.users.unsuspend');
+
+    Route::patch('/admin/users/{user}/ban', [AdminController::class, 'banUser'])
+        ->name('admin.users.ban');
+
+    Route::patch('/admin/users/{user}/unban', [AdminController::class, 'unbanUser'])
+        ->name('admin.users.unban');
 });
 
 

@@ -8,6 +8,9 @@ interface User {
     email: string;
     created_at: string;
     is_admin: boolean;
+    status: 'active' | 'suspended' | 'banned';
+    suspended_until: string | null;
+    suspension_reason: string | null;
 }
 
 interface Pagination {
@@ -24,6 +27,82 @@ const props = defineProps<{
         search: string | null;
     };
 }>();
+
+const selectedUser = ref<User | null>(null);
+const showSuspendModal = ref(false);
+
+const openSuspendModal = (user: User) => {
+    selectedUser.value = user;
+    showSuspendModal.value = true;
+};
+
+const closeSuspendModal = () => {
+    selectedUser.value = null;
+    showSuspendModal.value = false;
+};
+
+const suspendUser = (days: number) => {
+    if (!selectedUser.value) {
+        return;
+    }
+
+    router.patch(
+        `/admin/users/${selectedUser.value.id}/suspend`,
+        {
+            days: days,
+        },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                closeSuspendModal();
+            },
+        },
+    );
+};
+
+const unsuspendUser = (user: User) => {
+    if (!confirm(`Are you sure you want to unsuspend ${user.name}?`)) {
+        return;
+    }
+
+    router.patch(
+        `/admin/users/${user.id}/unsuspend`,
+        {},
+        {
+            preserveScroll: true,
+        },
+    );
+};
+
+const banUser = (user: User) => {
+    if (
+        !confirm(
+            `Are you sure you want to permanently ban ${user.name}?`,
+        )
+    ) {
+        return;
+    }
+
+    router.patch(
+        `/admin/users/${user.id}/ban`,
+        {},
+        {
+            preserveScroll: true,
+        },
+    );
+};
+
+const unbanUser = (user: User) => {
+    if (
+        !confirm(
+            `Are you sure you want to unban ${user.name}?`
+        )
+    ) {
+        return;
+    }
+
+    router.patch(`/admin/users/${user.id}/unban`);
+};
 
 const search = ref(props.filters.search ?? '');
 
@@ -143,11 +222,22 @@ const resetSearch = () => {
                         </th>
 
                         <th
+                            class="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                            Status
+                        </th>
+
+                        <th
                             class="px-6 py-4 text-left text-sm font-semibold text-gray-600"
                         >
                             Registered
                         </th>
+
+                        <th
+                            class="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                            Action
+                        </th>
                     </tr>
+                       
                 </thead>
 
                 <tbody>
@@ -183,10 +273,82 @@ const resetSearch = () => {
                             </span>
                         </td>
 
+                        <!-- Status -->
+                        <td class="px-6 py-5">
+                            <span
+                                v-if="user.status === 'active'"
+                                class="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
+                                    Active
+                            </span>
+
+                            <span
+                                v-else-if="user.status === 'suspended'"
+                                class="rounded-full bg-yellow-100 px-3 py-1 text-sm font-medium text-yellow-700">
+                                    Suspended
+                            </span>
+
+                        <span
+                            v-else-if="user.status === 'banned'"
+                            class="rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
+                                    Banned
+                        </span>
+                    </td>
+
                         <!-- Registered Date -->
                         <td class="px-6 py-5 text-gray-500">
                             {{ formatDate(user.created_at) }}
                         </td>
+
+                         <!-- Action -->
+                            <td class="px-6 py-5">
+                                <template v-if="user.status === 'active'">
+        <button
+            v-if="!user.is_admin"
+            type="button"
+            @click="openSuspendModal(user)"
+            class="mr-4 text-yellow-600 hover:underline">
+                Suspend
+        </button>
+
+        <button
+            v-if="!user.is_admin"
+            type="button"
+            @click="banUser(user)"
+            class="text-red-600 hover:underline"
+        >
+            Ban
+        </button>
+    </template>
+
+    <template v-else-if="user.status === 'suspended'">
+        <button
+            type="button"
+            @click="unsuspendUser(user)"
+            class="mr-4 text-green-600 hover:underline"
+        >
+            Unsuspend
+        </button>
+
+        <button
+            v-if="!user.is_admin"
+            type="button"
+            @click="banUser(user)"
+            class="text-red-600 hover:underline"
+        >
+            Ban
+        </button>
+    </template>
+
+    <template v-else-if="user.status === 'banned'">
+        <button
+        type="button"
+        @click="unbanUser(user)"
+        class="text-blue-600 hover:underline"
+    >
+        Unban
+    </button>
+    </template>
+                            </td>
                     </tr>
                 </tbody>
             </table>
@@ -234,4 +396,75 @@ const resetSearch = () => {
 </div>
         </div>
     </div>
+
+    <!-- Suspend Modal -->
+<div
+    v-if="showSuspendModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+>
+    <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+
+        <!-- Header -->
+        <div class="mb-6">
+            <h2 class="text-xl font-bold text-gray-800">
+                Suspend User
+            </h2>
+
+            <p class="mt-2 text-sm text-gray-500">
+                Select how long you want to suspend
+                <span class="font-medium text-gray-700">
+                    {{ selectedUser?.name }}
+                </span>.
+            </p>
+        </div>
+
+        <!-- Duration Options -->
+        <div class="space-y-3">
+
+            <button
+                type="button"
+                @click="suspendUser(7)"
+                class="w-full rounded-xl border border-gray-300 px-4 py-3 text-left transition hover:bg-gray-50"
+            >
+                7 Days
+            </button>
+
+            <button
+                type="button"
+                @click="suspendUser(30)"
+                class="w-full rounded-xl border border-gray-300 px-4 py-3 text-left transition hover:bg-gray-50"
+            >
+                30 Days
+            </button>
+
+            <button
+                type="button"
+                @click="suspendUser(90)"
+                class="w-full rounded-xl border border-gray-300 px-4 py-3 text-left transition hover:bg-gray-50"
+            >
+                90 Days
+            </button>
+
+            <button
+                type="button"
+                @click="suspendUser(365)"
+                class="w-full rounded-xl border border-gray-300 px-4 py-3 text-left transition hover:bg-gray-50"
+            >
+                1 Year
+            </button>
+
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-6 flex justify-end gap-3">
+            <button
+                type="button"
+                @click="closeSuspendModal"
+                class="rounded-xl border border-gray-300 px-5 py-2.5 text-gray-700 transition hover:bg-gray-50"
+            >
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
 </template>

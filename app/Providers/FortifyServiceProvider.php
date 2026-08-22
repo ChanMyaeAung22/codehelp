@@ -13,6 +13,9 @@ use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -28,11 +31,51 @@ class FortifyServiceProvider extends ServiceProvider
      * Bootstrap any application services.
      */
     public function boot(): void
-    {
-        $this->configureActions();
-        $this->configureViews();
-        $this->configureRateLimiting();
-    }
+{
+    $this->configureActions();
+    $this->configureViews();
+    $this->configureRateLimiting();
+
+    Fortify::authenticateUsing(function (Request $request) {
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user) {
+            return null;
+        }
+
+        if (! Hash::check($request->password, $user->password)) {
+            return null;
+        }
+
+        if ($user->status === 'suspended') {
+
+            // Suspension has expired
+            if (
+                $user->suspended_until &&
+                $user->suspended_until->isPast()
+            ) {
+                $user->update([
+                    'status' => 'active',
+                    'suspended_until' => null,
+                    'suspension_reason' => null,
+                ]);
+            } else {
+                throw ValidationException::withMessages([
+                    'email' => 'Your account is suspended until ' .
+                        $user->suspended_until?->format('d M Y, H:i'),
+                ]);
+            }
+        }
+
+        if ($user->status === 'banned') {
+            throw ValidationException::withMessages([
+                'email' => 'Your account has been permanently banned.',
+            ]);
+        }
+
+        return $user;
+    });
+}
 
     /**
      * Configure Fortify actions.

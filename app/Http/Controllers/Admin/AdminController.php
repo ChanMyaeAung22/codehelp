@@ -147,4 +147,72 @@ public function deleteComment(Comment $comment): RedirectResponse
         ->route('admin.comments')
         ->with('success', 'Comment deleted successfully.');
 }
+
+public function suspendUser(Request $request, User $user): RedirectResponse
+{
+    $request->validate([
+        'days' => ['required', 'integer', 'in:7,30,90,365'],
+    ]);
+
+    $user->update([
+        'status' => 'suspended',
+        'suspended_until' => now()->addDays($request->days),
+    ]);
+
+    return redirect()
+        ->route('admin.users')
+        ->with('success', 'User suspended successfully.');
+}
+
+public function unsuspendUser(User $user): RedirectResponse
+{
+    $user->update([
+        'status' => 'active',
+        'suspended_until' => null,
+        'suspension_reason' => null,
+    ]);
+
+    return redirect()
+        ->route('admin.users')
+        ->with('success', 'User unsuspended successfully.');
+}
+
+public function banUser(User $user): RedirectResponse
+{
+    if ($user->is_admin) {
+        return redirect()
+            ->route('admin.users')
+            ->with('error', 'Admin accounts cannot be banned.');
+    }
+
+    $user->update([
+        'status' => 'banned',
+        'suspended_until' => null,
+        'suspension_reason' => null,
+    ]);
+
+    return redirect()
+        ->route('admin.users')
+        ->with('success', 'User banned successfully.');
+}
+
+public function unbanUser(User $user): RedirectResponse
+{
+    // Do not allow an admin to unban another admin
+    if ($user->is_admin) {
+        return redirect()
+            ->route('admin.users')
+            ->with('error', 'Admin accounts cannot be modified.');
+    }
+
+    $user->update([
+        'status' => 'active',
+        'suspended_until' => null,
+        'suspension_reason' => null,
+    ]);
+
+    return redirect()
+        ->route('admin.users')
+        ->with('success', 'User has been unbanned successfully.');
+}
 }
