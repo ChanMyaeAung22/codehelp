@@ -12,21 +12,26 @@ use App\Http\Controllers\ReportController;
 
 Route::inertia('/', 'Welcome')->name('home');
 
+    // Public question browsing - guests can access
+    Route::get('/questions', [QuestionController::class, 'index'])
+        ->name('questions.index');
+
+    Route::get('/questions/{question}', [QuestionController::class, 'show'])
+        ->name('questions.show');
+
+    Route::get('/questions/tag/{tag:slug}', [QuestionController::class, 'byTag'])
+        ->name('questions.by-tag');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 
     //Questions
-    Route::get('/questions', [QuestionController::class, 'index'])
-        ->name('questions.index');
 
     Route::get('/questions/create', [QuestionController::class, 'create'])
         ->name('questions.create');
 
     Route::post('/questions', [QuestionController::class, 'store'])
         ->name('questions.store');
-
-    Route::get('/questions/{question}', [QuestionController::class, 'show'])
-        ->name('questions.show');
 
     Route::post('/questions/{question}/answers', [AnswerController::class, 'store'])
         ->middleware('auth')
@@ -49,8 +54,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('answers.accept');
 
     //Filter by Tags
-    Route::get('/questions/tag/{tag:slug}', [QuestionController::class, 'byTag'])
-    ->name('questions.by-tag');
     
     //Edit Answer
     Route::get(

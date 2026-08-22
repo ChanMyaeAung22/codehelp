@@ -17,6 +17,7 @@ const reportForm = useForm({
     reason: '',
     description: '',
     return_url: props.return_url ?? '',
+    general: '',
 });
 
 const submitReport = () => {
@@ -78,10 +79,10 @@ const submitReport = () => {
    
 <!-- General Report Error -->
 <div
-    v-if="reportForm.errors.report"
+    v-if="reportForm.errors.general"
     class="mt-4 rounded-xl border border-red-300 bg-red-100 px-4 py-3 text-sm text-red-700"
 >
-    {{ reportForm.errors.report }}
+    {{ reportForm.errors.general }}
 </div>
 
             <!-- Reason -->

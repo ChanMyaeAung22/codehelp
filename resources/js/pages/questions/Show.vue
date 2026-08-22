@@ -185,7 +185,7 @@ function deleteAnswer(answerId: number) {
 
              <!-- Question Actions -->
     <div
-        v-if="page.props.auth.user.id === question.user.id"
+        v-if="page.props.auth.user?.id === question.user.id"
         class="mt-6 flex gap-3">
         <a
             :href="`/questions/${question.id}/edit`"
@@ -202,27 +202,42 @@ function deleteAnswer(answerId: number) {
     </div>
 
         <Link
-            v-if="page.props.auth.user?.id !== question.user.id"
-            :href="`/questions/${question.id}/report`"
-            class="rounded-lg border border-red-300 px-3 py-1.5 text-sm text-red-600 transition hover:bg-red-50 mt-10">
-                Report
-        </Link>
+    v-if="
+        page.props.auth.user &&
+        page.props.auth.user.id !== question.user.id
+    "
+    :href="`/questions/${question.id}/report`"
+    class="mt-10 rounded-lg border border-red-300 px-3 py-1.5 text-sm text-red-600 transition hover:bg-red-50"
+>
+    Report
+</Link>
 
 
         <!-- Question Voting -->
         <div class="mt-6 flex items-center gap-3">
-            <button
-                type="button"
-                @click="voteQuestion(question.id, 'up')"
-                class="rounded-xl border border-gray-200 px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-green-300 hover:bg-green-50"
-            >
-                👍 Upvote
-            </button>
+    <template v-if="page.props.auth.user">
+        <button
+            type="button"
+            @click="voteQuestion(question.id, 'up')"
+            class="rounded-xl border border-gray-200 px-4 py-2 transition-all duration-300 hover:scale-105 hover:border-green-300 hover:bg-green-50"
+        >
+            👍 Upvote
+        </button>
+    </template>
 
-            <span class="font-semibold text-gray-700">
-                {{ question.votes.length }}
-            </span>
-        </div>
+    <template v-else>
+        <Link
+            href="/login"
+            class="rounded-xl border border-gray-200 px-4 py-2 text-sm text-gray-600 transition hover:bg-gray-50"
+        >
+            Log in to vote
+        </Link>
+    </template>
+
+    <span class="font-semibold text-gray-700">
+        {{ question.votes.length }}
+    </span>
+</div>
 
 
         </div>
