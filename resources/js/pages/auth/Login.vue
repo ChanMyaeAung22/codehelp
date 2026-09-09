@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
-import PasskeyVerify from '@/components/PasskeyVerify.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -210,23 +209,6 @@ defineProps<{
                             {{ status }}
                         </div>
 
-                        <!-- Passkey -->
-                        <div class="mb-6">
-                            <PasskeyVerify />
-                        </div>
-
-                        <!-- Divider -->
-                        <div class="mb-6 flex items-center gap-4">
-                            <div class="h-px flex-1 bg-slate-200"></div>
-
-                            <span
-                                class="text-xs font-medium uppercase tracking-wider text-slate-400"
-                            >
-                                or continue with email
-                            </span>
-
-                            <div class="h-px flex-1 bg-slate-200"></div>
-                        </div>
 
                         <!-- Login Form -->
                         <Form

@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { Link, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+
+const page = usePage();
+const isAdmin = computed(() => (page.props.auth as any)?.user?.is_admin);
 
 interface Question {
     id: number;
@@ -93,14 +96,27 @@ function formatDate(date: string) {
                     </p>
                 </div>
 
-                <!-- Ask Question -->
-                <Link
-                    href="/questions/create"
-                    class="inline-flex shrink-0 items-center justify-center rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/25"
-                >
-                    <span class="mr-2 text-lg">+</span>
-                    Ask Question
-                </Link>
+                <!-- Action Buttons -->
+                <div class="flex shrink-0 items-center gap-3">
+                    <!-- Go to Admin (admin only) -->
+                    <Link
+                        v-if="isAdmin"
+                        href="/admin"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md"
+                    >
+                        <span>⚙️</span>
+                        Go to Admin
+                    </Link>
+
+                    <!-- Ask Question -->
+                    <Link
+                        href="/questions/create"
+                        class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/25"
+                    >
+                        <span class="mr-2 text-lg">+</span>
+                        Ask Question
+                    </Link>
+                </div>
             </div>
 
             <!-- Selected Tag -->

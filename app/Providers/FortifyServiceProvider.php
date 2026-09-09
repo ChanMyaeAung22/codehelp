@@ -11,6 +11,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
+use App\Http\Responses\LoginResponse;
+use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
 use App\Models\User;
@@ -35,6 +37,8 @@ class FortifyServiceProvider extends ServiceProvider
     $this->configureActions();
     $this->configureViews();
     $this->configureRateLimiting();
+
+    $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
 
     Fortify::authenticateUsing(function (Request $request) {
         $user = User::where('email', $request->email)->first();

@@ -75,13 +75,6 @@ import { dashboard, login, register } from '@/routes';
                     <template v-if="$page.props.auth?.user">
                         <Link
                             href="/questions"
-                            class="hidden text-sm font-medium text-slate-600 hover:text-blue-600 sm:inline-block"
-                        >
-                            Browse
-                        </Link>
-
-                        <Link
-                            href="/questions"
                             class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
                         >
                             Dashboard

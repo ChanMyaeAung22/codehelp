@@ -73,12 +73,12 @@ const userMenuOpen = ref(false);
                         Tags
                     </Link>
 
-                    <Link
-                        href="/how-it-works"
+                    <a
+                        href="/#how-it-works"
                         class="text-sm font-medium text-slate-600 transition hover:text-blue-600"
                     >
                         How it works
-                    </Link>
+                    </a>
 
                     <Link
                         href="/questions/create"
@@ -127,13 +127,6 @@ const userMenuOpen = ref(false);
                             Profile
                         </Link>
 
-                        <Link
-                            href="/settings"
-                            class="block rounded-lg px-4 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50"
-                            @click="userMenuOpen = false"
-                        >
-                            Settings
-                        </Link>
 
                         <div class="my-1 border-t border-slate-100"></div>
 
@@ -191,13 +184,13 @@ const userMenuOpen = ref(false);
                         Tags
                     </Link>
 
-                    <Link
-                        href="/how-it-works"
+                    <a
+                        href="/#how-it-works"
                         class="rounded-lg px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
                         @click="mobileMenuOpen = false"
                     >
                         How it works
-                    </Link>
+                    </a>
 
                     <Link
                         href="/questions/create"
@@ -217,12 +210,6 @@ const userMenuOpen = ref(false);
                         Profile
                     </Link>
 
-                    <Link
-                        href="/settings"
-                        class="rounded-lg px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
-                    >
-                        Settings
-                    </Link>
 
                     <Link
                         :href="logout()"
