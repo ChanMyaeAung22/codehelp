@@ -208,9 +208,12 @@ function deleteAnswer(answerId: number) {
 
                                 <span>
                                     by
-                                    <span class="font-medium text-gray-700">
+                                    <Link
+                                        :href="`/users/${question.user.id}`"
+                                        class="font-medium text-gray-700 transition hover:text-blue-600 hover:underline"
+                                    >
                                         {{ question.user.name }}
-                                    </span>
+                                    </Link>
                                 </span>
                             </div>
                         </div>
@@ -365,8 +368,10 @@ function deleteAnswer(answerId: number) {
 
 
                                 <!-- Author -->
-                                <div class="flex items-center gap-3">
-
+                                <Link
+                                    :href="`/users/${question.user.id}`"
+                                    class="flex items-center gap-3 rounded-xl p-2 transition hover:bg-blue-50"
+                                >
                                     <div
                                         class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100 font-semibold text-blue-700"
                                     >
@@ -378,12 +383,11 @@ function deleteAnswer(answerId: number) {
                                             Asked by
                                         </p>
 
-                                        <p class="text-sm font-medium text-gray-700">
+                                        <p class="text-sm font-medium text-blue-700">
                                             {{ question.user.name }}
                                         </p>
                                     </div>
-
-                                </div>
+                                </Link>
 
                             </div>
 
@@ -662,8 +666,10 @@ function deleteAnswer(answerId: number) {
 
 
                                     <!-- Answer Author -->
-                                    <div class="flex items-center gap-3">
-
+                                    <Link
+                                        :href="`/users/${answer.user.id}`"
+                                        class="flex items-center gap-3 rounded-xl p-2 transition hover:bg-blue-50"
+                                    >
                                         <div
                                             class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100 font-semibold text-blue-700"
                                         >
@@ -675,12 +681,11 @@ function deleteAnswer(answerId: number) {
                                                 Answered by
                                             </p>
 
-                                            <p class="text-sm font-medium text-gray-700">
+                                            <p class="text-sm font-medium text-blue-700">
                                                 {{ answer.user.name }}
                                             </p>
                                         </div>
-
-                                    </div>
+                                    </Link>
 
                                 </div>
 

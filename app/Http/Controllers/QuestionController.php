@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Question;
+
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Response;
 use App\Models\Tag;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class QuestionController extends Controller
@@ -48,13 +50,14 @@ class QuestionController extends Controller
         }
 
         return redirect()
-            ->route('dashboard')
+            ->route('questions.index')
             ->with('success', 'Question posted successfully!');
     }
 
     public function index(Request $request): Response
     {
         $search = $request->input('search');
+        $sort   = $request->input('sort', 'latest'); // 'latest' | 'popular'
 
         $questions = Question::with([
             'user',
@@ -70,13 +73,16 @@ class QuestionController extends Controller
                             $query->where('name', 'like', "%{$search}%");
                         });
                 });
-            })
-            ->latest()
-            ->get();
+            });
+
+        $this->applySort($questions, $sort);
+
+        $questions = $questions->paginate(10)->withQueryString();
 
         return Inertia::render('questions/Index', [
             'questions' => $questions,
-            'search' => $search,
+            'search'    => $search,
+            'sort'      => $sort,
         ]);
     }
 
@@ -125,21 +131,26 @@ class QuestionController extends Controller
             ->with('success', 'Question updated successfully!');
     }
 
-    public function byTag(Tag $tag): Response
-    {   
+    public function byTag(Tag $tag, Request $request): Response
+    {
+        $sort = $request->input('sort', 'latest');
+
         $questions = $tag->questions()
             ->with([
                 'user',
                 'answers',
                 'tags',
                 'votes',
-            ])
-            ->latest()
-            ->get();
+            ]);
+
+        $this->applySort($questions, $sort);
+
+        $questions = $questions->paginate(10)->withQueryString();
 
         return Inertia::render('questions/Index', [
-            'questions' => $questions,
+            'questions'  => $questions,
             'selectedTag' => $tag,
+            'sort'       => $sort,
         ]);
     }
 
@@ -152,5 +163,41 @@ class QuestionController extends Controller
         return redirect()
             ->route('questions.index')
             ->with('success', 'Question deleted successfully!');
+    }
+
+    /**
+     * Apply sorting to the given query.
+     *
+     * 'latest'  → newest questions first (default, existing behaviour).
+     * 'popular' → ordered by (upvotes − downvotes) descending, computed
+     *             on-the-fly via two SQL sub-selects — no extra DB column.
+     */
+    private function applySort(
+        \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Relations\Relation $query,
+        string $sort
+    ): void
+    {
+        if ($sort === 'popular') {
+            // Add a computed column: popularity_score = upvotes - downvotes
+            $query->select('questions.*')
+                ->selectSub(
+                    DB::table('question_votes')
+                        ->selectRaw('COUNT(*)')
+                        ->whereColumn('question_id', 'questions.id')
+                        ->where('vote_type', 'up'),
+                    'upvote_count'
+                )
+                ->selectSub(
+                    DB::table('question_votes')
+                        ->selectRaw('COUNT(*)')
+                        ->whereColumn('question_id', 'questions.id')
+                        ->where('vote_type', 'down'),
+                    'downvote_count'
+                )
+                ->orderByRaw('(upvote_count - downvote_count) DESC')
+                ->orderByDesc('created_at'); // tie-break: newest first
+        } else {
+            $query->latest(); // existing default behaviour
+        }
     }
 }

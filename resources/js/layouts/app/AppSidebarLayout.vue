@@ -66,12 +66,7 @@ const userMenuOpen = ref(false);
                         Questions
                     </Link>
 
-                    <Link
-                        href="/tags"
-                        class="text-sm font-medium text-slate-600 transition hover:text-blue-600"
-                    >
-                        Tags
-                    </Link>
+
 
                     <a
                         href="/#how-it-works"
@@ -176,13 +171,7 @@ const userMenuOpen = ref(false);
                         Questions
                     </Link>
 
-                    <Link
-                        href="/tags"
-                        class="rounded-lg px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                        @click="mobileMenuOpen = false"
-                    >
-                        Tags
-                    </Link>
+
 
                     <a
                         href="/#how-it-works"

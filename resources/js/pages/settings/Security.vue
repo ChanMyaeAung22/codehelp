@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
@@ -23,25 +24,47 @@ defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: 'Security settings',
+                title: 'Password settings',
                 href: edit(),
             },
         ],
     },
 });
+
+const page = usePage();
+
+// Show confirmation banner when Laravel flashes 'status' = 'password-updated'
+// OR when Inertia flashes a toast with message 'Password updated.'
+const passwordUpdated = computed(
+    () =>
+        page.props.status === 'password-updated' ||
+        (page.props as any).flash?.toast?.message === 'Password updated.',
+);
 </script>
 
 <template>
-    <Head title="Security settings" />
+    <Head title="Password settings" />
 
-    <h1 class="sr-only">Security settings</h1>
+    <h1 class="sr-only">Password settings</h1>
 
     <div class="space-y-6">
         <Heading
             variant="small"
-            title="Update password"
+            title="Change Password"
             description="Ensure your account is using a long, random password to stay secure"
         />
+
+        <!-- ✅ Success confirmation banner -->
+        <div
+            v-if="passwordUpdated"
+            class="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 shadow-sm"
+        >
+            <!-- Checkmark icon -->
+            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-xs font-bold">
+                ✓
+            </span>
+            <span class="font-medium">Password updated successfully!</span>
+        </div>
 
         <Form
             v-bind="SecurityController.update.form()"
@@ -64,7 +87,7 @@ defineOptions({
                     name="current_password"
                     class="mt-1 block w-full"
                     autocomplete="current-password"
-                    placeholder="Current password"
+                    placeholder="Enter your current password"
                 />
                 <InputError :message="errors.current_password" />
             </div>
@@ -76,20 +99,20 @@ defineOptions({
                     name="password"
                     class="mt-1 block w-full"
                     autocomplete="new-password"
-                    placeholder="New password"
+                    placeholder="Enter a new password"
                     :passwordrules="props.passwordRules"
                 />
                 <InputError :message="errors.password" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="password_confirmation">Confirm password</Label>
+                <Label for="password_confirmation">Confirm new password</Label>
                 <PasswordInput
                     id="password_confirmation"
                     name="password_confirmation"
                     class="mt-1 block w-full"
                     autocomplete="new-password"
-                    placeholder="Confirm password"
+                    placeholder="Confirm your new password"
                     :passwordrules="props.passwordRules"
                 />
                 <InputError :message="errors.password_confirmation" />
@@ -100,13 +123,13 @@ defineOptions({
                     :disabled="processing"
                     data-test="update-password-button"
                 >
-                    Save
+                    {{ processing ? 'Saving...' : 'Update Password' }}
                 </Button>
             </div>
         </Form>
     </div>
 
-    <ManageTwoFactor
+    <!-- <ManageTwoFactor
         :canManageTwoFactor="canManageTwoFactor"
         :requiresConfirmation="requiresConfirmation"
         :twoFactorEnabled="twoFactorEnabled"
@@ -115,5 +138,5 @@ defineOptions({
     <ManagePasskeys
         :canManagePasskeys="canManagePasskeys"
         :passkeys="passkeys"
-    />
+    /> -->
 </template>

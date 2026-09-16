@@ -59,6 +59,9 @@ class SecurityController extends Controller
             'password' => $request->password,
         ]);
 
+        // Flash a session status that Inertia will share as a page prop
+        session()->flash('status', 'password-updated');
+
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Password updated.')]);
 
         return back();

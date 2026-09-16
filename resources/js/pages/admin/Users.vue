@@ -314,16 +314,19 @@ const getInitial = (name: string) => {
                             >
                                 <!-- User -->
                                 <td class="px-6 py-5">
-                                    <div class="flex items-center gap-3">
+                                    <Link
+                                        :href="`/users/${user.id}`"
+                                        class="flex items-center gap-3 group"
+                                    >
                                         <div
-                                            class="flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-blue-600"
+                                            class="flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-blue-600 transition group-hover:bg-blue-100"
                                         >
                                             {{ getInitial(user.name) }}
                                         </div>
 
                                         <div>
                                             <p
-                                                class="font-semibold text-slate-800"
+                                                class="font-semibold text-slate-800 transition group-hover:text-blue-600 group-hover:underline underline-offset-2"
                                             >
                                                 {{ user.name }}
                                             </p>
@@ -334,7 +337,7 @@ const getInitial = (name: string) => {
                                                 User #{{ user.id }}
                                             </p>
                                         </div>
-                                    </div>
+                                    </Link>
                                 </td>
 
                                 <!-- Email -->

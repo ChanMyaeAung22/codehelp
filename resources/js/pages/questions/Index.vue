@@ -33,9 +33,26 @@ interface Tag {
     slug: string;
 }
 
-defineProps<{
-    questions: Question[];
+interface PaginatorLink {
+    url: string | null;
+    label: string;
+    active: boolean;
+}
+
+interface Paginator {
+    data: Question[];
+    links: PaginatorLink[];
+    current_page: number;
+    last_page: number;
+    total: number;
+    from: number | null;
+    to: number | null;
+}
+
+const props = defineProps<{
+    questions: Paginator;
     selectedTag?: Tag;
+    sort?: string;
 }>();
 
 const searchTerm = ref('');
@@ -45,6 +62,21 @@ function search() {
         '/questions',
         {
             search: searchTerm.value,
+            sort: props.sort ?? 'latest',
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+        },
+    );
+}
+
+function sortBy(value: string) {
+    router.get(
+        '/questions',
+        {
+            search: searchTerm.value,
+            sort: value,
         },
         {
             preserveState: true,
@@ -64,6 +96,14 @@ function formatDate(date: string) {
         day: 'numeric',
         timeZone: 'UTC',
     }).format(new Date(date));
+}
+
+// Decode HTML entities in Laravel paginator labels (e.g. &laquo; &raquo;)
+function decodeLabel(label: string): string {
+    return label
+        .replace(/&laquo;/g, '\u00AB')
+        .replace(/&raquo;/g, '\u00BB')
+        .replace(/&amp;/g, '&');
 }
 </script>
 
@@ -106,6 +146,15 @@ function formatDate(date: string) {
                     >
                         <span>⚙️</span>
                         Go to Admin
+                    </Link>
+
+                    <!-- Leaderboard -->
+                    <Link
+                        href="/leaderboard"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md"
+                    >
+                        <span>🏆</span>
+                        Leaderboard
                     </Link>
 
                     <!-- Ask Question -->
@@ -173,23 +222,58 @@ function formatDate(date: string) {
                 </button>
             </form>
 
+            <!-- Sort Toggle -->
+            <div class="mb-6 flex items-center gap-2">
+                <span class="text-sm font-medium text-slate-500">Sort by:</span>
+
+                <button
+                    type="button"
+                    @click="sortBy('latest')"
+                    :class="[
+                        'rounded-xl border px-4 py-2 text-sm font-semibold transition-all duration-200',
+                        (sort ?? 'latest') === 'latest'
+                            ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-600/20'
+                            : 'border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700',
+                    ]"
+                >
+                    🕐 Latest
+                </button>
+
+                <button
+                    type="button"
+                    @click="sortBy('popular')"
+                    :class="[
+                        'rounded-xl border px-4 py-2 text-sm font-semibold transition-all duration-200',
+                        sort === 'popular'
+                            ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-600/20'
+                            : 'border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700',
+                    ]"
+                >
+                    🔥 Popular
+                </button>
+            </div>
+
             <!-- Question Count -->
             <div class="mb-5 flex items-center justify-between">
                 <div>
                     <h2 class="text-lg font-semibold text-slate-900">
-                        {{ questions.length }}
-                        {{ questions.length === 1 ? 'Question' : 'Questions' }}
+                        {{ questions.total }}
+                        {{ questions.total === 1 ? 'Question' : 'Questions' }}
                     </h2>
 
                     <p class="mt-1 text-sm text-slate-500">
-                        Recent questions from the community
+                        {{
+                            sort === 'popular'
+                                ? 'Sorted by popularity score (upvotes − downvotes)'
+                                : 'Recent questions from the community'
+                        }}
                     </p>
                 </div>
             </div>
 
             <!-- Empty State -->
             <div
-                v-if="questions.length === 0"
+                v-if="questions.data.length === 0"
                 class="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center shadow-sm"
             >
                 <div
@@ -218,7 +302,7 @@ function formatDate(date: string) {
             <!-- Question Cards -->
             <div v-else class="space-y-5">
                 <article
-                    v-for="question in questions"
+                    v-for="question in questions.data"
                     :key="question.id"
                     class="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-100/50"
                 >
@@ -301,7 +385,11 @@ function formatDate(date: string) {
                             class="mt-6 flex flex-col gap-4 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between"
                         >
                             <!-- User -->
-                            <div class="flex items-center gap-3">
+                            <Link
+                                :href="`/users/${question.user.id}`"
+                                class="flex items-center gap-3 rounded-xl p-1.5 transition hover:bg-blue-50"
+                                @click.stop
+                            >
                                 <div
                                     class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100 text-sm font-bold text-blue-700"
                                 >
@@ -313,11 +401,11 @@ function formatDate(date: string) {
                                         Asked by
                                     </p>
 
-                                    <p class="text-sm font-semibold text-slate-700">
+                                    <p class="text-sm font-semibold text-blue-700">
                                         {{ question.user.name }}
                                     </p>
                                 </div>
-                            </div>
+                            </Link>
 
                             <!-- Date -->
                             <div class="text-sm text-slate-400">
@@ -326,6 +414,30 @@ function formatDate(date: string) {
                         </div>
                     </div>
                 </article>
+            </div>
+
+            <!-- Pagination -->
+            <div
+                v-if="questions.last_page > 1"
+                class="mt-10 flex flex-wrap items-center justify-center gap-2"
+            >
+                <template v-for="link in questions.links" :key="link.label">
+                    <Link
+                        v-if="link.url"
+                        :href="link.url"
+                        preserve-scroll
+                        :class="[
+                            'inline-flex min-w-[2.5rem] items-center justify-center rounded-xl border px-3.5 py-2 text-sm font-semibold transition-all duration-200',
+                            link.active
+                                ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-600/20'
+                                : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700',
+                        ]"
+                    >{{ decodeLabel(link.label) }}</Link>
+                    <span
+                        v-else
+                        class="inline-flex min-w-[2.5rem] items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-semibold text-slate-400"
+                    >{{ decodeLabel(link.label) }}</span>
+                </template>
             </div>
 
         </div>

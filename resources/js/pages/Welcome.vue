@@ -56,10 +56,10 @@ import { dashboard, login, register } from '@/routes';
                     </Link>
 
                     <Link
-                        href="/questions/tag/java"
+                        href="/leaderboard"
                         class="text-sm font-medium text-slate-600 transition hover:text-blue-600"
                     >
-                        Tags
+                        Leaderboard
                     </Link>
 
                     <a

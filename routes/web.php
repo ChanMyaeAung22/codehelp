@@ -8,9 +8,17 @@ use App\Http\Controllers\AnswerVoteController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\LeaderboardController;
 
 
 Route::inertia('/', 'Welcome')->name('home');
+
+// Public leaderboard
+Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
+
+// Public user profile
+Route::get('/users/{user}', [UserProfileController::class, 'show'])->name('users.show');
 
 // Public question browsing
 Route::get('/questions', [QuestionController::class, 'index'])
