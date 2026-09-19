@@ -132,9 +132,11 @@ public function updateStatus(Request $request, Report $report): RedirectResponse
 
 public function index(Request $request)
     {
-    $status = $request->input('status');
-    $type = $request->input('type');
-    $search = $request->input('search');
+    $status    = $request->input('status');
+    $type      = $request->input('type');
+    $search    = $request->input('search');
+    $dateFrom  = $request->input('date_from');  // e.g. '2026-08-01'
+    $dateTo    = $request->input('date_to');    // e.g. '2026-09-15'
 
     $reports = Report::with(['user', 'reportable'])
         ->when($status, function ($query) use ($status) {
@@ -143,9 +145,9 @@ public function index(Request $request)
         ->when($type, function ($query) use ($type) {
             $modelClass = match ($type) {
                 'question' => Question::class,
-                'answer' => Answer::class,
-                'comment' => Comment::class,
-                default => null,
+                'answer'   => Answer::class,
+                'comment'  => Comment::class,
+                default    => null,
             };
 
             if ($modelClass) {
@@ -190,6 +192,14 @@ public function index(Request $request)
                 );
             });
         })
+        // Filter: reports created on or after date_from
+        ->when($dateFrom, function ($query) use ($dateFrom) {
+            $query->whereDate('reports.created_at', '>=', $dateFrom);
+        })
+        // Filter: reports created on or before date_to
+        ->when($dateTo, function ($query) use ($dateTo) {
+            $query->whereDate('reports.created_at', '<=', $dateTo);
+        })
         ->latest()
         ->paginate(10)
         ->withQueryString();
@@ -199,18 +209,20 @@ public function index(Request $request)
 
     'pagination' => [
         'current_page' => $reports->currentPage(),
-        'last_page' => $reports->lastPage(),
-        'per_page' => $reports->perPage(),
-        'total' => $reports->total(),
-        'from' => $reports->firstItem(),
-        'to' => $reports->lastItem(),
-        'links' => $reports->linkCollection(),
+        'last_page'    => $reports->lastPage(),
+        'per_page'     => $reports->perPage(),
+        'total'        => $reports->total(),
+        'from'         => $reports->firstItem(),
+        'to'           => $reports->lastItem(),
+        'links'        => $reports->linkCollection(),
     ],
 
     'filters' => [
-        'status' => $status,
-        'type' => $type,
-        'search' => $search,
+        'status'    => $status,
+        'type'      => $type,
+        'search'    => $search,
+        'date_from' => $dateFrom,
+        'date_to'   => $dateTo,
     ],
     ]);
     }

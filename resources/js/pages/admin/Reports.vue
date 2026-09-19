@@ -48,6 +48,8 @@ const props = defineProps<{
         status: string | null;
         type: string | null;
         search: string | null;
+        date_from: string | null;
+        date_to: string | null;
     };
 
     pagination: Pagination;
@@ -58,6 +60,8 @@ const selectedReport = ref<Report | null>(null);
 const statusFilter = ref(props.filters.status ?? '');
 const typeFilter = ref(props.filters.type ?? '');
 const searchQuery = ref(props.filters.search ?? '');
+const dateFrom = ref(props.filters.date_from ?? '');
+const dateTo = ref(props.filters.date_to ?? '');
 
 const getReportType = (report: Report) => {
     if (report.reportable_type.includes('Question')) {
@@ -127,9 +131,11 @@ const applyFilters = () => {
     router.get(
         '/admin/reports',
         {
-            status: statusFilter.value || undefined,
-            type: typeFilter.value || undefined,
-            search: searchQuery.value || undefined,
+            status:    statusFilter.value || undefined,
+            type:      typeFilter.value || undefined,
+            search:    searchQuery.value || undefined,
+            date_from: dateFrom.value || undefined,
+            date_to:   dateTo.value || undefined,
         },
         {
             preserveState: true,
@@ -143,6 +149,8 @@ const resetFilters = () => {
     statusFilter.value = '';
     typeFilter.value = '';
     searchQuery.value = '';
+    dateFrom.value = '';
+    dateTo.value = '';
 
     router.get(
         '/admin/reports',
@@ -172,17 +180,11 @@ const updateStatus = (
 const getPaginationUrl = (page: number) => {
     const params = new URLSearchParams();
 
-    if (props.filters.status) {
-        params.set('status', props.filters.status);
-    }
-
-    if (props.filters.type) {
-        params.set('type', props.filters.type);
-    }
-
-    if (props.filters.search) {
-        params.set('search', props.filters.search);
-    }
+    if (props.filters.status)    params.set('status',    props.filters.status);
+    if (props.filters.type)      params.set('type',      props.filters.type);
+    if (props.filters.search)    params.set('search',    props.filters.search);
+    if (props.filters.date_from) params.set('date_from', props.filters.date_from);
+    if (props.filters.date_to)   params.set('date_to',   props.filters.date_to);
 
     params.set('page', String(page));
 
@@ -314,6 +316,60 @@ const getPaginationUrl = (page: number) => {
             >
                 Reset
             </button>
+        </div>
+
+    </div>
+
+    <!-- Date Range Row -->
+    <div class="mt-4 grid gap-4 md:grid-cols-4">
+
+        <!-- From date -->
+        <div>
+            <label
+                for="date_from"
+                class="mb-2 block text-sm font-medium text-gray-700"
+            >
+                From Date
+            </label>
+
+            <input
+                id="date_from"
+                v-model="dateFrom"
+                type="date"
+                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                @keyup.enter="applyFilters"
+            />
+        </div>
+
+        <!-- To date -->
+        <div>
+            <label
+                for="date_to"
+                class="mb-2 block text-sm font-medium text-gray-700"
+            >
+                To Date
+            </label>
+
+            <input
+                id="date_to"
+                v-model="dateTo"
+                type="date"
+                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                @keyup.enter="applyFilters"
+            />
+        </div>
+
+        <!-- Active date badge -->
+        <div
+            v-if="dateFrom || dateTo"
+            class="flex items-end col-span-2"
+        >
+            <span class="inline-flex items-center gap-2 rounded-lg bg-blue-50 border border-blue-200 px-3 py-2 text-sm text-blue-700">
+                📅
+                <span v-if="dateFrom && dateTo">{{ dateFrom }} → {{ dateTo }}</span>
+                <span v-else-if="dateFrom">From {{ dateFrom }}</span>
+                <span v-else>Until {{ dateTo }}</span>
+            </span>
         </div>
 
     </div>
