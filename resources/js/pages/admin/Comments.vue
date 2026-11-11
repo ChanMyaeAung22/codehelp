@@ -307,7 +307,7 @@ const formatDate = (date: string) => {
 
                                 <!-- Action -->
                                 <td class="px-6 py-5">
-                                    <div class="flex justify-end">
+                                    <div class="flex flex-wrap justify-end gap-2">
                                         <button
                                             type="button"
                                             @click="

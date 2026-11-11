@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Link, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import {
     MessageSquare,
     ThumbsUp,
@@ -7,6 +8,8 @@ import {
     Users,
     ChevronLeft,
     ChevronRight,
+    Search,
+    RotateCcw,
 } from '@lucide/vue';
 
 interface User {
@@ -34,7 +37,29 @@ interface Pagination {
 const props = defineProps<{
     questions: Pagination;
     highlightedQuestionId?: string | number | null;
+    filters: {
+        search: string | null;
+    };
 }>();
+
+const search = ref(props.filters.search ?? '');
+
+const searchQuestions = () => {
+    router.get(
+        '/admin/questions',
+        { search: search.value },
+        { preserveState: true, preserveScroll: true },
+    );
+};
+
+const resetSearch = () => {
+    search.value = '';
+    router.get(
+        '/admin/questions',
+        {},
+        { preserveState: true, preserveScroll: true },
+    );
+};
 
 const isHighlighted = (questionId: number) => {
     return Number(props.highlightedQuestionId) === Number(questionId);
@@ -99,6 +124,47 @@ const deleteQuestion = (id: number) => {
                 >
                     ← Dashboard
                 </Link>
+            </div>
+
+            <!-- Search Card -->
+            <div
+                class="mb-7 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
+                <form
+                    @submit.prevent="searchQuestions"
+                    class="flex flex-col gap-3 md:flex-row"
+                >
+                    <div class="relative flex-1">
+                        <Search
+                            class="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-400"
+                        />
+
+                        <input
+                            id="admin-questions-search"
+                            v-model="search"
+                            type="text"
+                            placeholder="Search questions by title..."
+                            class="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 hover:shadow-md active:scale-[0.98]"
+                    >
+                        <Search class="size-4" />
+                        Search
+                    </button>
+
+                    <button
+                        type="button"
+                        @click="resetSearch"
+                        class="inline-flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold text-amber-600 transition hover:bg-amber-50"
+                    >
+                        <RotateCcw class="size-4" />
+                        Reset
+                    </button>
+                </form>
             </div>
 
             <!-- Questions Card -->
@@ -258,7 +324,7 @@ const deleteQuestion = (id: number) => {
 
                                 <!-- Actions -->
                                 <td class="px-6 py-5">
-                                    <div class="flex justify-end">
+                                    <div class="flex flex-wrap justify-end gap-2">
                                         <button
                                             type="button"
                                             @click="
@@ -333,7 +399,7 @@ const deleteQuestion = (id: number) => {
         <!-- Previous -->
         <Link
             v-if="questions.current_page > 1"
-            :href="`/admin/questions?page=${questions.current_page - 1}`"
+            :href="`/admin/questions?page=${questions.current_page - 1}${filters.search ? `&search=${encodeURIComponent(filters.search)}` : ''}`"
             preserve-scroll
             preserve-state
             class="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
@@ -348,7 +414,7 @@ const deleteQuestion = (id: number) => {
             :key="page"
         >
             <Link
-                :href="`/admin/questions?page=${page}`"
+                :href="`/admin/questions?page=${page}${filters.search ? `&search=${encodeURIComponent(filters.search)}` : ''}`"
                 preserve-scroll
                 preserve-state
                 :class="[
@@ -365,7 +431,7 @@ const deleteQuestion = (id: number) => {
         <!-- Next -->
         <Link
             v-if="questions.current_page < questions.last_page"
-            :href="`/admin/questions?page=${questions.current_page + 1}`"
+            :href="`/admin/questions?page=${questions.current_page + 1}${filters.search ? `&search=${encodeURIComponent(filters.search)}` : ''}`"
             preserve-scroll
             preserve-state
             class="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"

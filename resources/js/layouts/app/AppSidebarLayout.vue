@@ -1,8 +1,8 @@
+
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { Head } from '@inertiajs/vue3';
 import { LogOut, Menu, X, Plus, ChevronDown } from '@lucide/vue';
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 
 import { logout } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -22,51 +22,35 @@ const userMenuOpen = ref(false);
 <template>
     <div class="min-h-screen bg-slate-50 text-slate-900">
 
-        <!-- ==================== NAVBAR ==================== -->
-        <header
-            class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur"
-        >
-            <div
-                class="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8"
-            >
+        <!-- Navbar -->
+        <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
+            <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
                 <!-- Logo -->
-                <Link
-                    href="/"
-                    class="flex items-center gap-3"
-                >
-                    <div
-                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white shadow-lg shadow-blue-600/20"
-                    >
+                <Link href="/" class="flex items-center gap-3">
+                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white shadow-lg shadow-blue-600/20">
                         &lt;/&gt;
                     </div>
 
                     <div class="hidden sm:block">
-                        <div
-                            class="text-xl font-bold tracking-tight text-slate-900"
-                        >
+                        <div class="text-xl font-bold tracking-tight text-slate-900">
                             Code<span class="text-blue-600">Help</span>
                         </div>
 
-                        <div
-                            class="text-[11px] font-medium uppercase tracking-[0.16em] text-slate-400"
-                        >
+                        <div class="text-[11px] font-medium uppercase tracking-[0.16em] text-slate-400">
                             Developer Community
                         </div>
                     </div>
                 </Link>
 
                 <!-- Desktop Navigation -->
-                <nav class="hidden items-center gap-8 md:flex">
-
+                <nav class="hidden items-center gap-5 lg:flex xl:gap-8">
                     <Link
                         href="/questions"
                         class="text-sm font-medium text-slate-600 transition hover:text-blue-600"
                     >
                         Questions
                     </Link>
-
-
 
                     <a
                         href="/#how-it-works"
@@ -77,42 +61,35 @@ const userMenuOpen = ref(false);
 
                     <Link
                         href="/questions/create"
-                        class="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/25"
+                        class="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 xl:px-5"
                     >
                         <Plus class="h-4 w-4" />
                         Ask Question
                     </Link>
-
                 </nav>
 
-                <!-- User Menu -->
-                <div class="hidden items-center md:flex">
+                <!-- Desktop User Menu -->
+                <div class="relative hidden items-center lg:flex">
                     <button
                         type="button"
                         class="flex items-center gap-2 rounded-xl px-3 py-2 transition hover:bg-slate-50"
                         @click="userMenuOpen = !userMenuOpen"
                     >
-                        <div
-                            class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-700"
-                        >
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-700">
                             {{ $page.props.auth?.user?.name?.charAt(0)?.toUpperCase() }}
                         </div>
 
-                        <span
-                            class="max-w-28 truncate text-sm font-medium text-slate-700"
-                        >
+                        <span class="max-w-28 truncate text-sm font-medium text-slate-700">
                             {{ $page.props.auth?.user?.name }}
                         </span>
 
-                        <ChevronDown
-                            class="h-4 w-4 text-slate-400"
-                        />
+                        <ChevronDown class="h-4 w-4 text-slate-400" />
                     </button>
 
                     <!-- Dropdown -->
                     <div
                         v-if="userMenuOpen"
-                        class="absolute right-6 top-[70px] w-52 rounded-xl border border-slate-200 bg-white p-2 shadow-xl"
+                        class="absolute right-0 top-full mt-2 w-52 rounded-xl border border-slate-200 bg-white p-2 shadow-xl"
                     >
                         <Link
                             href="/settings/profile"
@@ -121,7 +98,6 @@ const userMenuOpen = ref(false);
                         >
                             Profile
                         </Link>
-
 
                         <div class="my-1 border-t border-slate-100"></div>
 
@@ -138,28 +114,23 @@ const userMenuOpen = ref(false);
                     </div>
                 </div>
 
-                <!-- Mobile button -->
+                <!-- Mobile Menu Button -->
                 <button
                     type="button"
-                    class="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 md:hidden"
+                    class="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 lg:hidden"
+                    :aria-expanded="mobileMenuOpen"
+                    aria-label="Toggle navigation menu"
                     @click="mobileMenuOpen = !mobileMenuOpen"
                 >
-                    <X
-                        v-if="mobileMenuOpen"
-                        class="h-6 w-6"
-                    />
-
-                    <Menu
-                        v-else
-                        class="h-6 w-6"
-                    />
+                    <X v-if="mobileMenuOpen" class="h-6 w-6" />
+                    <Menu v-else class="h-6 w-6" />
                 </button>
             </div>
 
-            <!-- Mobile Navigation -->
+            <!-- Mobile / Tablet Navigation -->
             <div
                 v-if="mobileMenuOpen"
-                class="border-t border-slate-200 bg-white px-6 py-5 md:hidden"
+                class="border-t border-slate-200 bg-white px-4 py-5 sm:px-6 lg:hidden"
             >
                 <nav class="flex flex-col gap-2">
 
@@ -170,8 +141,6 @@ const userMenuOpen = ref(false);
                     >
                         Questions
                     </Link>
-
-
 
                     <a
                         href="/#how-it-works"
@@ -192,19 +161,31 @@ const userMenuOpen = ref(false);
 
                     <div class="my-2 border-t border-slate-200"></div>
 
+                    <!-- Mobile User Information -->
+                    <div class="flex items-center gap-3 px-4 py-3">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-700">
+                            {{ $page.props.auth?.user?.name?.charAt(0)?.toUpperCase() }}
+                        </div>
+
+                        <span class="min-w-0 truncate text-sm font-semibold text-slate-800">
+                            {{ $page.props.auth?.user?.name }}
+                        </span>
+                    </div>
+
                     <Link
                         href="/settings/profile"
                         class="rounded-lg px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
+                        @click="mobileMenuOpen = false"
                     >
                         Profile
                     </Link>
-
 
                     <Link
                         :href="logout()"
                         method="post"
                         as="button"
                         class="flex items-center gap-2 rounded-lg px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50"
+                        @click="mobileMenuOpen = false"
                     >
                         <LogOut class="h-4 w-4" />
                         Log out
@@ -214,7 +195,7 @@ const userMenuOpen = ref(false);
             </div>
         </header>
 
-        <!-- ==================== PAGE CONTENT ==================== -->
+        <!-- Page Content -->
         <main class="min-h-[calc(100vh-80px)]">
             <slot />
         </main>

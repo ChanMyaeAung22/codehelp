@@ -60,6 +60,9 @@ class AdminController extends Controller
         'answers',
         'votes',
     ])
+        ->when($request->search, function ($query, $search) {
+            $query->where('title', 'like', "%{$search}%");
+        })
         ->latest()
         ->paginate(10)
         ->withQueryString();
@@ -67,6 +70,9 @@ class AdminController extends Controller
     return Inertia::render('admin/Questions', [
         'questions' => $questions,
         'highlightedQuestionId' => $request->query('highlight'),
+        'filters' => [
+            'search' => $request->search,
+        ],
     ]);
 }
 

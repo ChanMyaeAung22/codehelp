@@ -109,7 +109,7 @@ function decodeLabel(label: string): string {
 
 <template>
     <div class="min-h-screen bg-slate-50">
-        <div class="mx-auto max-w-6xl px-6 py-10 lg:px-8">
+        <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
 
             <!-- Page Header -->
             <div
@@ -137,7 +137,7 @@ function decodeLabel(label: string): string {
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex shrink-0 items-center gap-3">
+                <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
                     <!-- Go to Admin (admin only) -->
                     <Link
                         v-if="isAdmin"
@@ -223,7 +223,7 @@ function decodeLabel(label: string): string {
             </form>
 
             <!-- Sort Toggle -->
-            <div class="mb-6 flex items-center gap-2">
+            <div class="mb-6 flex flex-wrap items-center gap-2">
                 <span class="text-sm font-medium text-slate-500">Sort by:</span>
 
                 <button
@@ -306,7 +306,7 @@ function decodeLabel(label: string): string {
                     :key="question.id"
                     class="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-100/50"
                 >
-                    <div class="p-6 sm:p-7">
+                    <div class="p-4 sm:p-6 lg:p-7">
 
                         <!-- Question Title -->
                         <Link

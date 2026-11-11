@@ -307,7 +307,7 @@ function deleteAnswer(answerId: number) {
 
                             <!-- Description -->
                             <div
-                                class="prose prose-slate max-w-none text-[16px] leading-8 text-gray-700"
+                                class="prose prose-slate max-w-none overflow-x-auto break-words text-[16px] leading-8 text-gray-700"
                             >
                                 <p class="whitespace-pre-line">
                                     {{ question.description }}
@@ -610,7 +610,7 @@ function deleteAnswer(answerId: number) {
 
 
                                 <p
-                                    class="whitespace-pre-line leading-8 text-gray-700"
+                                    class="overflow-x-auto whitespace-pre-line break-words leading-8 text-gray-700"
                                 >
                                     {{ answer.content }}
                                 </p>

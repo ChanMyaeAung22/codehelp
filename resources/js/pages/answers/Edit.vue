@@ -26,8 +26,9 @@ const submit = () => {
 </script>
 
 <template>
-    <div class="mx-auto max-w-4xl px-6 py-10">
-        <h1 class="mb-2 text-3xl font-bold text-gray-800">
+    <div class="min-h-screen bg-slate-50">
+        <div class="mx-auto max-w-4xl px-6 py-10">
+        <h1 class="mb-2 text-2xl font-bold text-gray-800 sm:text-3xl">
             Edit Answer
         </h1>
 
@@ -38,6 +39,7 @@ const submit = () => {
             </span>
         </p>
 
+        <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <form @submit.prevent="submit" class="space-y-6">
             <div>
                 <label class="mb-2 block font-medium text-gray-700">
@@ -58,7 +60,7 @@ const submit = () => {
                 </p>
             </div>
 
-            <div class="flex gap-3">
+            <div class="flex flex-wrap gap-3">
                 <button
                     type="submit"
                     :disabled="form.processing"
@@ -79,5 +81,7 @@ const submit = () => {
                 </a>
             </div>
         </form>
+        </div>
+        </div>
     </div>
 </template>

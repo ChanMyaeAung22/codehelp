@@ -22,9 +22,11 @@ const submit = () => {
 </script>
 
 <template>
-    <div class="mx-auto max-w-4xl px-6 py-10">
-        <h1 class="mb-8 text-3xl font-bold">Edit Question</h1>
+    <div class="min-h-screen bg-slate-50">
+        <div class="mx-auto max-w-4xl px-6 py-10">
+        <h1 class="mb-8 text-2xl font-bold sm:text-3xl">Edit Question</h1>
 
+        <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <form @submit.prevent="submit" class="space-y-6">
             <div>
                 <label class="mb-2 block font-medium">
@@ -64,7 +66,7 @@ const submit = () => {
                 </p>
             </div>
 
-            <div class="flex gap-3">
+            <div class="flex flex-wrap gap-3">
                 <button
                     type="submit"
                     class="cursor-pointer rounded-lg bg-blue-600 px-6 py-3 text-white transition-all duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-xl active:scale-95"
@@ -85,5 +87,7 @@ const submit = () => {
                 </a>
             </div>
         </form>
+        </div>
+        </div>
     </div>
 </template>

@@ -405,7 +405,7 @@ const getInitial = (name: string) => {
                                 <!-- Actions -->
                                 <td class="px-6 py-5">
                                     <div
-                                        class="flex justify-end gap-2"
+                                        class="flex flex-wrap justify-end gap-2"
                                     >
                                         <!-- Active -->
                                         <template
@@ -590,7 +590,7 @@ const getInitial = (name: string) => {
     <!-- Suspend Modal -->
     <div
         v-if="showSuspendModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 backdrop-blur-sm"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm"
         @click.self="closeSuspendModal"
     >
         <div

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import { dashboard, login, register } from '@/routes';
+
+const mobileMenuOpen = ref(false);
 </script>
 
 <template>
@@ -12,7 +15,7 @@ import { dashboard, login, register } from '@/routes';
             class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur"
         >
             <div
-                class="mx-auto flex h-18 max-w-7xl items-center justify-between px-6 lg:px-8"
+                class="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
             >
                 <!-- Logo -->
                 <Link href="/" class="flex items-center gap-3">
@@ -47,7 +50,7 @@ import { dashboard, login, register } from '@/routes';
                 </Link>
 
                 <!-- Desktop Navigation -->
-                <nav class="hidden items-center gap-8 md:flex">
+                <nav class="hidden items-center gap-6 lg:flex xl:gap-8">
                     <Link
                         href="/questions"
                         class="text-sm font-medium text-slate-600 transition hover:text-blue-600"
@@ -104,7 +107,66 @@ import { dashboard, login, register } from '@/routes';
                             Register
                         </Link>
                     </template>
+
+                    <!-- Hamburger button (mobile only) -->
+                    <button
+                        class="ml-1 flex items-center justify-center rounded-lg p-2 text-slate-600 transition hover:bg-slate-100  lg:hidden"
+                        :aria-expanded="mobileMenuOpen"
+                        aria-label="Toggle menu"
+                        @click="mobileMenuOpen = !mobileMenuOpen"
+                    >
+                        <svg
+                            v-if="!mobileMenuOpen"
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg
+                            v-else
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
+            </div>
+
+            <!-- Mobile menu dropdown -->
+            <div
+                v-if="mobileMenuOpen"
+                class="absolute top-full left-0 right-0 z-50 space-y-2 border-b border-slate-200 bg-white p-4 lg:hidden"
+            >
+                <Link
+                    href="/questions"
+                    class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-blue-600"
+                    @click="mobileMenuOpen = false"
+                >
+                    Questions
+                </Link>
+                <Link
+                    href="/leaderboard"
+                    class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-blue-600"
+                    @click="mobileMenuOpen = false"
+                >
+                    Leaderboard
+                </Link>
+                <a
+                    href="#how-it-works"
+                    class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-blue-600"
+                    @click="mobileMenuOpen = false"
+                >
+                    How it works
+                </a>
             </div>
         </header>
 
@@ -136,7 +198,7 @@ import { dashboard, login, register } from '@/routes';
                         </div>
 
                         <h1
-                            class="max-w-3xl text-5xl font-extrabold leading-[1.05] tracking-tight text-slate-900 sm:text-6xl lg:text-7xl"
+                            class="max-w-3xl text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-900 sm:text-6xl lg:text-7xl"
                         >
                             Learn.
                             <span class="text-blue-600">Ask.</span>
@@ -258,7 +320,7 @@ import { dashboard, login, register } from '@/routes';
                             </div>
 
                             <!-- Code -->
-                            <div class="bg-slate-950 p-7 font-mono text-sm leading-7">
+                            <div class="overflow-x-auto bg-slate-950 p-4 font-mono text-xs leading-7 sm:p-7 sm:text-sm">
                                 <div>
                                     <span class="text-purple-400">public</span>
                                     <span class="text-blue-400"> class </span>
@@ -404,7 +466,7 @@ import { dashboard, login, register } from '@/routes';
 
             <!-- ==================== POPULAR TOPICS ==================== -->
             <section class="bg-slate-50 py-24">
-                <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="text-center">
                         <p
                             class="text-sm font-semibold uppercase tracking-wider text-blue-600"
@@ -519,7 +581,7 @@ import { dashboard, login, register } from '@/routes';
                 id="how-it-works"
                 class="bg-white py-24"
             >
-                <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="text-center">
                         <p
                             class="text-sm font-semibold uppercase tracking-wider text-blue-600"
@@ -535,7 +597,7 @@ import { dashboard, login, register } from '@/routes';
                     </div>
 
                     <div
-                        class="mt-16 grid gap-10 md:grid-cols-3"
+                        class="mt-16 grid gap-10 grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
                     >
                         <!-- Step 1 -->
                         <div class="text-center">
@@ -641,7 +703,7 @@ import { dashboard, login, register } from '@/routes';
 
             <!-- ==================== CTA ==================== -->
             <section class="bg-slate-50 py-20">
-                <div class="mx-auto max-w-5xl px-6 lg:px-8">
+                <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
                     <div
                         class="overflow-hidden rounded-3xl bg-blue-600 px-8 py-14 text-center shadow-xl shadow-blue-600/20 sm:px-16"
                     >

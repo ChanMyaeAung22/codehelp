@@ -224,7 +224,7 @@ const deleteAnswer = (id: number) => {
                                 <!-- Answer -->
                                 <td class="max-w-md px-6 py-5">
                                     <p
-                                        class="line-clamp-3 text-sm leading-6 text-slate-600"
+                                        class="line-clamp-3 break-words text-sm leading-6 text-slate-600"
                                     >
                                         {{ answer.content }}
                                     </p>
@@ -239,7 +239,7 @@ const deleteAnswer = (id: number) => {
 
                                 <!-- Actions -->
                                 <td class="px-6 py-5">
-                                    <div class="flex justify-end">
+                                    <div class="flex flex-wrap justify-end gap-2">
                                         <button
                                             type="button"
                                             @click="
